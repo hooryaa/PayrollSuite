@@ -1,0 +1,66 @@
+@* EmployeeTable
+   Why it exists: renders a reusable DevExpress data grid for employee lists.
+   Component lifecycle: it receives its data and refreshes automatically when the Employees parameter changes.
+   Data binding: the grid binds to the Employees collection with a Data attribute.
+   Event handling: row action buttons raise view, edit, and delete callbacks.
+   Dependency Injection: it does not inject services itself; it is driven by the parent page.
+   Routing: it does not define a route. Its parent page handles navigation.
+   API communication: it does not call the API directly. The parent component loads API results and passes them in.
+*@
+@if (Employees?.Any() != true)
+{
+    <div class="empty-state">No employees match the filter.</div>
+}
+else
+{
+    <DxGrid Data="@Employees" ShowFilterRow="true" ShowPager="true" PageSize="10" ShowGroupPanel="false">
+        <DxGridColumn Field="@nameof(EmployeeViewModel.EmployeeNumber)" Caption="Number" Width="140px" />
+        <DxGridColumn Field="@nameof(EmployeeViewModel.FirstName)" Caption="First Name" />
+        <DxGridColumn Field="@nameof(EmployeeViewModel.LastName)" Caption="Last Name" />
+        <DxGridColumn Caption="Department">
+            <DataItemTemplate Context="employee">
+                @RenderDepartment(employee.DepartmentID)
+            </DataItemTemplate>
+        </DxGridColumn>
+        <DxGridColumn Caption="Hire Date">
+            <DataItemTemplate Context="employee">
+                @employee.HireDate.ToString("yyyy-MM-dd")
+            </DataItemTemplate>
+        </DxGridColumn>
+        <DxGridColumn Field="@nameof(EmployeeViewModel.IsActive)" Caption="Active" />
+        <DxGridColumn Caption="Actions" Width="240px">
+            <DataItemTemplate Context="employee">
+                <DxButton ButtonType="ButtonType.Normal" Text="View" Click="@(() => OnViewEmployee.InvokeAsync(employee.EmployeeID))" />
+                <DxButton ButtonType="ButtonType.Normal" Text="Edit" Click="@(() => OnEditEmployee.InvokeAsync(employee.EmployeeID))" />
+                <DxButton ButtonType="ButtonType.Danger" Text="Delete" Click="@(() => OnDeleteEmployee.InvokeAsync(employee.EmployeeID))" />
+            </DataItemTemplate>
+        </DxGridColumn>
+    </DxGrid>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<EmployeeViewModel>? Employees { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnViewEmployee { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnEditEmployee { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDeleteEmployee { get; set; }
+
+    private static string RenderDepartment(int? id)
+    {
+        return id switch
+        {
+            1 => "Human Resources",
+            2 => "Finance",
+            3 => "Operations",
+            4 => "IT",
+            5 => "Sales",
+            _ => "Unassigned"
+        };
+    }
+}

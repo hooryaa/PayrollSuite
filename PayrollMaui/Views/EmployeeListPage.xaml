@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PayrollMaui.Views.EmployeeListPage"
+             Title="Employee List">
+    <VerticalStackLayout Padding="16" Spacing="12">
+        <Label Text="Employee Directory" FontSize="24" FontAttributes="Bold" />
+        <Button Text="Refresh" Command="{Binding RefreshCommand}" />
+        <CollectionView ItemsSource="{Binding Employees}" SelectionMode="Single" SelectedItem="{Binding SelectedEmployee}" SelectionChanged="OnSelectionChanged">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="#d1d5db" CornerRadius="12" Padding="12" Margin="0,4">
+                        <Grid ColumnDefinitions="*,auto" RowDefinitions="Auto,Auto">
+                            <Label Text="{Binding EmployeeNumber}" FontAttributes="Bold" />
+                            <Label Grid.Row="1" Text="{Binding FirstName}" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding HireDate, StringFormat='Hire Date: {0:yyyy-MM-dd}'}" HorizontalOptions="End" />
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding IsActive, StringFormat='Active: {0}'}" HorizontalOptions="End" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

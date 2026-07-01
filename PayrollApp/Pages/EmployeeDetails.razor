@@ -1,0 +1,87 @@
+@page "/employees/{EmployeeId:int}"
+@inject IEmployeeApiService EmployeeService
+@inject NavigationManager NavigationManager
+
+@* Employee Details
+   Why it exists: shows a single employee's complete record and supports navigation to edit or delete.
+   Component lifecycle: loads the chosen employee in OnInitializedAsync.
+   Data binding: binds the employee object to the detail view.
+   Event handling: responds to edit and delete button clicks.
+   Dependency Injection: injects IEmployeeApiService to retrieve and delete the employee.
+   Routing: mapped to "/employees/{id}".
+   API communication: loads the employee record from the backend and sends delete requests.
+*@
+<h2>Employee Details</h2>
+
+@if (isLoading)
+{
+    <p>Loading employee details...</p>
+}
+else if (employee is null)
+{
+    <p>Employee not found.</p>
+}
+else
+{
+    <DxCard>
+        <div class="detail-grid">
+            <div><h3>@employee.FirstName @employee.LastName</h3></div>
+            <div><p>@employee.EmployeeNumber</p></div>
+            <div><strong>Email:</strong> @employee.Email</div>
+            <div><strong>Phone:</strong> @employee.Phone</div>
+            <div><strong>Hire Date:</strong> @employee.HireDate.ToString("yyyy-MM-dd")</div>
+            <div><strong>Employment Type:</strong> @employee.EmploymentType</div>
+            <div><strong>Department:</strong> @RenderDepartment(employee.DepartmentID)</div>
+            <div><strong>Active:</strong> @(employee.IsActive ? "Yes" : "No")</div>
+            <div><strong>Work Email:</strong> @employee.WorkEmail</div>
+        </div>
+        <div class="button-row">
+            <DxButton ButtonType="ButtonType.Normal" Text="Edit" Click="EditEmployee" />
+            <DxButton ButtonType="ButtonType.Danger" Text="Delete" Click="DeleteEmployee" />
+            <DxButton ButtonType="ButtonType.Secondary" Text="Back to list" Click="BackToList" />
+        </div>
+    </DxCard>
+}
+
+@code {
+    [Parameter]
+    public int EmployeeId { get; set; }
+
+    private EmployeeViewModel? employee;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employee = await EmployeeService.GetByIdAsync(EmployeeId);
+        isLoading = false;
+    }
+
+    private void EditEmployee()
+    {
+        NavigationManager.NavigateTo($"/employees/edit/{EmployeeId}");
+    }
+
+    private async Task DeleteEmployee()
+    {
+        await EmployeeService.DeleteAsync(EmployeeId);
+        NavigationManager.NavigateTo("/employees");
+    }
+
+    private void BackToList()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+
+    private static string RenderDepartment(int? id)
+    {
+        return id switch
+        {
+            1 => "Human Resources",
+            2 => "Finance",
+            3 => "Operations",
+            4 => "IT",
+            5 => "Sales",
+            _ => "Unassigned"
+        };
+    }
+}

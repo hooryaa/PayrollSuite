@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows10.0.19041</TargetFrameworks>
+    <OutputType>WinExe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseMaui>true</UseMaui>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <ApplicationTitle>PayrollMaui</ApplicationTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MauiAsset Include="Resources\**" />
+  </ItemGroup>
+</Project>

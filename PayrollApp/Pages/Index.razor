@@ -1,0 +1,132 @@
+@page "/"
+@inject IEmployeeApiService EmployeeService
+@inject NavigationManager NavigationManager
+
+@* Dashboard
+   Why it exists: provides a high-level view of payroll activity and staffing trends.
+   Component lifecycle: loads metrics during OnInitializedAsync and refreshes when requested.
+   Data binding: binds summary counts, recent hires, and chart data to the UI.
+   Event handling: includes a refresh button and row click actions from the employee grid.
+   Dependency Injection: injects IEmployeeApiService to retrieve data from the backend.
+   Routing: mapped to the root page "/".
+   API communication: uses the injected service to load employee data and compute dashboard summaries.
+*@
+<h2>Dashboard</h2>
+<p>Quick access to current employee counts, active staff, departmental coverage, and recent hires.</p>
+
+@if (isLoading)
+{
+    <p>Loading dashboard...</p>
+}
+else
+{
+    <div class="card-grid">
+        <EmployeeCard Title="Total Employees" Value="@totalEmployees.ToString()" Detail="Employees in the system" />
+        <EmployeeCard Title="Active Staff" Value="@activeEmployees.ToString()" Detail="Currently active employees" />
+        <EmployeeCard Title="Departments" Value="@departmentCount.ToString()" Detail="Departments represented" />
+        <EmployeeCard Title="Recent Hires" Value="@recentHires.ToString()" Detail="Hired in last 90 days" />
+    </div>
+
+    <section>
+        <div class="section-header">
+            <h3>Department staffing</h3>
+            <DxButton ButtonType="ButtonType.Normal" Text="Refresh" Click="RefreshData" />
+        </div>
+        <DxChart Data="@departmentChartData">
+            <DxChartSeries ArgumentFieldName="DepartmentName" ValueFieldName="EmployeeCount" Type="ChartSeriesType.Bar" Name="Employees" />
+        </DxChart>
+    </section>
+
+    <section>
+        <div class="section-header">
+            <h3>Recent hires</h3>
+            <DxButton ButtonType="ButtonType.Normal" Text="Refresh" Click="RefreshData" />
+        </div>
+        <EmployeeTable Employees="@recentHireList" OnViewEmployee="ViewEmployee" OnEditEmployee="EditEmployee" OnDeleteEmployee="DeleteEmployee" />
+    </section>
+}
+
+@code {
+    private bool isLoading = true;
+    private int totalEmployees;
+    private int activeEmployees;
+    private int departmentCount;
+    private int recentHires;
+    private List<EmployeeViewModel> recentHireList = new();
+    private List<DepartmentChartItem> departmentChartData = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardAsync();
+    }
+
+    private async Task LoadDashboardAsync()
+    {
+        isLoading = true;
+        var allEmployees = await EmployeeService.GetAllAsync();
+        totalEmployees = allEmployees.Count;
+        activeEmployees = allEmployees.Count(e => e.IsActive);
+        departmentCount = allEmployees.Select(e => e.DepartmentID).Where(id => id.HasValue).Distinct().Count();
+
+        var cutoff = DateTime.Today.AddDays(-90);
+        recentHireList = allEmployees
+            .Where(e => e.HireDate >= cutoff)
+            .OrderByDescending(e => e.HireDate)
+            .Take(5)
+            .ToList();
+
+        recentHires = recentHireList.Count;
+        departmentChartData = allEmployees
+            .Where(e => e.DepartmentID.HasValue)
+            .GroupBy(e => e.DepartmentID)
+            .Select(g => new DepartmentChartItem
+            {
+                DepartmentName = RenderDepartment(g.Key),
+                EmployeeCount = g.Count()
+            })
+            .OrderByDescending(item => item.EmployeeCount)
+            .ToList();
+
+        isLoading = false;
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadDashboardAsync();
+    }
+
+    private void ViewEmployee(int id)
+    {
+        NavigationManager.NavigateTo($"/employees/{id}");
+    }
+
+    private void EditEmployee(int id)
+    {
+        NavigationManager.NavigateTo($"/employees/edit/{id}");
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        await EmployeeService.DeleteAsync(id);
+        await LoadDashboardAsync();
+    }
+
+    private static string RenderDepartment(int? id)
+    {
+        return id switch
+        {
+            1 => "Human Resources",
+            2 => "Finance",
+            3 => "Operations",
+            4 => "IT",
+            5 => "Sales",
+            _ => "Unassigned"
+        };
+    }
+
+    private class DepartmentChartItem
+    {
+        public string DepartmentName { get; set; } = string.Empty;
+        public int EmployeeCount { get; set; }
+    }
+}

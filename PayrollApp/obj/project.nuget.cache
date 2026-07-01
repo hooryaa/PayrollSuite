@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "DwdEdqLu9ds=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\user\\payroll-api\\PayrollApp\\PayrollApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.blazor\\25.1.3\\devexpress.blazor.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.blazor.resources\\25.1.3\\devexpress.blazor.resources.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.blazor.themes\\25.1.3\\devexpress.blazor.themes.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.blazor.themes.fluent\\25.1.3\\devexpress.blazor.themes.fluent.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.data\\25.1.3\\devexpress.data.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.drawing\\25.1.3\\devexpress.drawing.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.pdf.core\\25.1.3\\devexpress.pdf.core.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.pdf.drawing\\25.1.3\\devexpress.pdf.drawing.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devexpress.printing.core\\25.1.3\\devexpress.printing.core.25.1.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\devextreme.aspnet.data\\5.1.0\\devextreme.aspnet.data.5.1.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.objectpool\\8.0.10\\microsoft.extensions.objectpool.8.0.10.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.drawing.common\\8.0.15\\system.drawing.common.8.0.15.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.security.cryptography.pkcs\\8.0.1\\system.security.cryptography.pkcs.8.0.1.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.security.cryptography.xml\\8.0.2\\system.security.cryptography.xml.8.0.2.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.servicemodel.http\\8.1.2\\system.servicemodel.http.8.1.2.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.servicemodel.primitives\\8.1.2\\system.servicemodel.primitives.8.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}

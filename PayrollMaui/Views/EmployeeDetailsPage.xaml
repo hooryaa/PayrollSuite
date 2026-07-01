@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PayrollMaui.Views.EmployeeDetailsPage"
+             Title="Employee Details">
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+            <Frame BorderColor="#2563eb" CornerRadius="16" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Employee Details" FontSize="22" FontAttributes="Bold" />
+                    <Label Text="{Binding Employee.EmployeeNumber, StringFormat='Number: {0}'}" />
+                    <Label Text="{Binding Employee.FirstName, StringFormat='First Name: {0}'}" />
+                    <Label Text="{Binding Employee.LastName, StringFormat='Last Name: {0}'}" />
+                    <Label Text="{Binding Employee.Email, StringFormat='Email: {0}'}" />
+                    <Label Text="{Binding Employee.Phone, StringFormat='Phone: {0}'}" />
+                    <Label Text="{Binding Employee.HireDate, StringFormat='Hire Date: {0:yyyy-MM-dd}'}" />
+                    <Label Text="{Binding Employee.IsActive, StringFormat='Active: {0}'}" />
+                    <Label Text="{Binding Employee.DepartmentID, StringFormat='Department ID: {0}'}" />
+                    <Label Text="{Binding Employee.EmploymentType, StringFormat='Employment Type: {0}'}" />
+                </VerticalStackLayout>
+            </Frame>
+            <Button Text="Back to list" Clicked="OnBackClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,86 @@
+@* EmployeeSearchFilter
+   Why it exists: provides a searchable input and department filter with a richer DevExpress UI.
+   Component lifecycle: initializes filter values on first render, then raises events whenever the user changes criteria.
+   Data binding: binds the search text and selected department to component fields.
+   Event handling: emits OnFilterChanged when the search string or department selection changes.
+   Dependency Injection: does not inject services directly; it receives its callback from the parent.
+   Routing: does not define a route. It is embedded by pages that need filtering.
+   API communication: it does not call the API itself; parent pages receive filter updates and apply them to API-loaded data.
+*@
+<div class="filter-panel">
+    <div class="filter-field">
+        <label for="searchTerm">Search</label>
+        <DxTextBox T="string" @bind-Value="SearchTerm" Placeholder="Search by name or number" ShowClearButton="true" />
+    </div>
+
+    <div class="filter-field">
+        <label for="departmentId">Department</label>
+        <DxComboBox TData="KeyValuePair<int, string>" TValue="int?" Data="@departmentOptions"
+                    TextFieldName="Value"
+                    ValueFieldName="Key"
+                    @bind-Value="DepartmentId"
+                    ShowClearButton="true"
+                    Placeholder="All departments" />
+    </div>
+
+    <button class="button-secondary" type="button" @onclick="ResetFilters">Clear</button>
+</div>
+
+@code {
+    private string searchTerm = string.Empty;
+    private int? departmentId;
+
+    private string SearchTerm
+    {
+        get => searchTerm;
+        set
+        {
+            if (searchTerm != value)
+            {
+                searchTerm = value;
+                _ = OnFilterChangedAsync();
+            }
+        }
+    }
+
+    private int? DepartmentId
+    {
+        get => departmentId;
+        set
+        {
+            if (departmentId != value)
+            {
+                departmentId = value;
+                _ = OnFilterChangedAsync();
+            }
+        }
+    }
+
+    private readonly List<KeyValuePair<int, string>> departmentOptions = new()
+    {
+        new KeyValuePair<int, string>(1, "Human Resources"),
+        new KeyValuePair<int, string>(2, "Finance"),
+        new KeyValuePair<int, string>(3, "Operations"),
+        new KeyValuePair<int, string>(4, "IT"),
+        new KeyValuePair<int, string>(5, "Sales")
+    };
+
+    [Parameter]
+    public EventCallback<EmployeeFilterModel> OnFilterChanged { get; set; }
+
+    private async Task OnFilterChangedAsync()
+    {
+        await OnFilterChanged.InvokeAsync(new EmployeeFilterModel
+        {
+            SearchTerm = searchTerm,
+            DepartmentId = departmentId
+        });
+    }
+
+    private async Task ResetFilters()
+    {
+        SearchTerm = string.Empty;
+        DepartmentId = null;
+        await OnFilterChangedAsync();
+    }
+}

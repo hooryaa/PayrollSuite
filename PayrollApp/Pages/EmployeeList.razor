@@ -1,0 +1,90 @@
+@page "/employees"
+@inject IEmployeeApiService EmployeeService
+@inject NavigationManager NavigationManager
+
+@* Employee List
+   Why it exists: displays all employees and allows searching and department filtering.
+   Component lifecycle: loads employee data on initialization and rerenders when the filter changes.
+   Data binding: binds the filtered employee list and search criteria to the UI.
+   Event handling: reacts to filter updates and row actions from the reusable table component.
+   Dependency Injection: injects IEmployeeApiService for API data retrieval.
+   Routing: mapped to "/employees".
+   API communication: requests all employees once and applies client-side search and department filters.
+*@
+<h2>Employee List</h2>
+<p>Search across employees and narrow results by department.</p>
+
+<EmployeeSearchFilter OnFilterChanged="HandleFilterChanged" />
+
+@if (isLoading)
+{
+    <p>Loading employees...</p>
+}
+else
+{
+    <div class="section-header">
+        <DxButton ButtonType="ButtonType.Success" Text="New Employee" Click="CreateEmployee" />
+    </div>
+
+    <EmployeeTable Employees="@filteredEmployees" OnViewEmployee="ViewEmployee" OnEditEmployee="EditEmployee" OnDeleteEmployee="DeleteEmployee" />
+}
+
+@code {
+    private List<EmployeeViewModel> allEmployees = new();
+    private List<EmployeeViewModel> filteredEmployees = new();
+    private bool isLoading = true;
+    private EmployeeFilterModel currentFilter = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployeesAsync();
+    }
+
+    private async Task LoadEmployeesAsync()
+    {
+        isLoading = true;
+        allEmployees = await EmployeeService.GetAllAsync();
+        ApplyFilter();
+        isLoading = false;
+    }
+
+    private void ApplyFilter()
+    {
+        filteredEmployees = allEmployees
+            .Where(e => string.IsNullOrWhiteSpace(currentFilter.SearchTerm)
+                || e.FirstName.Contains(currentFilter.SearchTerm, StringComparison.OrdinalIgnoreCase)
+                || e.LastName.Contains(currentFilter.SearchTerm, StringComparison.OrdinalIgnoreCase)
+                || e.EmployeeNumber.Contains(currentFilter.SearchTerm, StringComparison.OrdinalIgnoreCase))
+            .Where(e => !currentFilter.DepartmentId.HasValue || e.DepartmentID == currentFilter.DepartmentId)
+            .OrderBy(e => e.LastName)
+            .ThenBy(e => e.FirstName)
+            .ToList();
+    }
+
+    private void HandleFilterChanged(EmployeeFilterModel filter)
+    {
+        currentFilter = filter;
+        ApplyFilter();
+    }
+
+    private void CreateEmployee()
+    {
+        NavigationManager.NavigateTo("/employees/create");
+    }
+
+    private void ViewEmployee(int id)
+    {
+        NavigationManager.NavigateTo($"/employees/{id}");
+    }
+
+    private void EditEmployee(int id)
+    {
+        NavigationManager.NavigateTo($"/employees/edit/{id}");
+    }
+
+    private async Task DeleteEmployee(int id)
+    {
+        await EmployeeService.DeleteAsync(id);
+        await LoadEmployeesAsync();
+    }
+}

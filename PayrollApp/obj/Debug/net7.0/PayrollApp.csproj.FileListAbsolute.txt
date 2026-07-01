@@ -1,0 +1,7 @@
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.AssemblyInfoInputs.cache
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.AssemblyInfo.cs
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.csproj.CoreCompileInputs.cache
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.RazorAssemblyInfo.cache
+C:\Users\user\payroll-api\PayrollApp\obj\Debug\net7.0\PayrollApp.RazorAssemblyInfo.cs

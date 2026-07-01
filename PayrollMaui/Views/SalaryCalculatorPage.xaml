@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PayrollMaui.Views.SalaryCalculatorPage"
+             Title="Salary Calculator">
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+            <Label Text="Salary Calculator" FontSize="24" FontAttributes="Bold" />
+            <Button Text="Load Employees" Command="{Binding RefreshEmployeesCommand}" />
+            <Picker Title="Select Employee" ItemsSource="{Binding Employees}" ItemDisplayBinding="{Binding EmployeeNumber}" SelectedIndexChanged="OnEmployeeChanged" />
+            <Entry Placeholder="Base Salary" Keyboard="Numeric" Text="{Binding BaseSalary, Mode=TwoWay}" />
+            <Entry Placeholder="Bonus" Keyboard="Numeric" Text="{Binding Bonus, Mode=TwoWay}" />
+            <Button Text="Calculate" Command="{Binding CalculateCommand}" />
+
+            <Frame BorderColor="#d1d5db" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Calculation Result" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="{Binding CalculationResult.BaseSalary, StringFormat='Base Salary: {0:C}'}" />
+                    <Label Text="{Binding CalculationResult.TaxAmount, StringFormat='Tax: {0:C}'}" />
+                    <Label Text="{Binding CalculationResult.Benefits, StringFormat='Benefits: {0:C}'}" />
+                    <Label Text="{Binding CalculationResult.NetSalary, StringFormat='Net Salary: {0:C}'}" />
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,169 @@
+@page "/employees/create"
+@page "/employees/edit/{EmployeeId:int}"
+@inject IEmployeeApiService EmployeeService
+@inject NavigationManager NavigationManager
+
+@* Employee Form
+   Why it exists: provides a single create/edit form for employee details.
+   Component lifecycle: when editing, loads the existing employee before rendering the form.
+   Data binding: uses DevExpress form layout and input components to bind the model.
+   Event handling: responds to valid form submission and cancel actions.
+   Dependency Injection: injects IEmployeeApiService to save data to the backend.
+   Routing: maps to both "/employees/create" and "/employees/edit/{id}".
+   API communication: sends create or update requests through the injected service.
+*@
+<h2>@(isEdit ? "Edit Employee" : "Create Employee")</h2>
+
+@if (isLoading)
+{
+    <p>Loading form...</p>
+}
+else
+{
+    <EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <DxFormLayout ColCount="2" LabelLocation="FormLabelLocation.Top" CssClass="dx-form-layout">
+            <DxFormLayoutItem Caption="Employee Number">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.EmployeeNumber" Enabled="!isEdit" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="First Name">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.FirstName" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Last Name">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.LastName" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Email">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.Email" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Phone">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.Phone" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Hire Date">
+                <ChildContent Context="ignored">
+                    <DxDateEdit T="DateTime" @bind-Value="formModel.HireDate" Enabled="!isEdit" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Active">
+                <ChildContent Context="ignored">
+                    <DxCheckBox T="bool" @bind-Value="formModel.IsActive" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Department">
+                <ChildContent Context="ignored">
+                    <DxComboBox TData="KeyValuePair<int, string>" TValue="int?" Data="@departmentOptions"
+                                TextFieldName="Value"
+                                ValueFieldName="Key"
+                                @bind-Value="formModel.DepartmentID"
+                                Placeholder="Select department" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Position ID">
+                <ChildContent Context="ignored">
+                    <DxSpinEdit T="int?" @bind-Value="formModel.PositionID" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Employment Type">
+                <ChildContent Context="ignored">
+                    <DxComboBox TData="string" TValue="string" Data="@employmentTypes"
+                                @bind-Value="formModel.EmploymentType"
+                                Placeholder="Select employment type" />
+                </ChildContent>
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Work Email">
+                <ChildContent Context="ignored">
+                    <DxTextBox T="string" @bind-Value="formModel.WorkEmail" />
+                </ChildContent>
+            </DxFormLayoutItem>
+        </DxFormLayout>
+
+        <div class="button-row">
+            <DxButton ButtonType="ButtonType.Success" Text="Save" UseSubmitBehavior="true" />
+            <DxButton ButtonType="ButtonType.Normal" Text="Cancel" Click="Cancel" />
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int? EmployeeId { get; set; }
+
+    private bool isEdit => EmployeeId.HasValue;
+    private bool isLoading = true;
+    private EmployeeEditModel formModel = new();
+
+    private readonly List<KeyValuePair<int, string>> departmentOptions = new()
+    {
+        new KeyValuePair<int, string>(1, "Human Resources"),
+        new KeyValuePair<int, string>(2, "Finance"),
+        new KeyValuePair<int, string>(3, "Operations"),
+        new KeyValuePair<int, string>(4, "IT"),
+        new KeyValuePair<int, string>(5, "Sales")
+    };
+
+    private readonly List<string> employmentTypes = new()
+    {
+        "FullTime",
+        "PartTime",
+        "Contract",
+        "Intern"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (isEdit)
+        {
+            var employee = await EmployeeService.GetByIdAsync(EmployeeId!.Value);
+            if (employee != null)
+            {
+                formModel = new EmployeeEditModel
+                {
+                    EmployeeID = employee.EmployeeID,
+                    EmployeeNumber = employee.EmployeeNumber,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    Phone = employee.Phone,
+                    HireDate = employee.HireDate,
+                    IsActive = employee.IsActive,
+                    DepartmentID = employee.DepartmentID,
+                    PositionID = employee.PositionID,
+                    EmploymentType = employee.EmploymentType,
+                    WorkEmail = employee.WorkEmail
+                };
+            }
+        }
+
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (isEdit)
+        {
+            await EmployeeService.UpdateAsync(EmployeeId!.Value, formModel);
+            NavigationManager.NavigateTo($"/employees/{EmployeeId}");
+        }
+        else
+        {
+            var created = await EmployeeService.CreateAsync(formModel);
+            NavigationManager.NavigateTo($"/employees/{created.EmployeeID}");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo(isEdit ? $"/employees/{EmployeeId}" : "/employees");
+    }
+}
