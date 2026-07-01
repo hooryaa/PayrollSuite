@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)devexpress.blazor\25.1.3\buildTransitive\net5.0\DevExpress.Blazor.targets" Condition="Exists('$(NuGetPackageRoot)devexpress.blazor\25.1.3\buildTransitive\net5.0\DevExpress.Blazor.targets')" />
-  </ImportGroup>
-</Project>
