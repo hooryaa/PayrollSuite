@@ -11,5 +11,8 @@
 
   <ItemGroup>
     <MauiAsset Include="Resources\**" />
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

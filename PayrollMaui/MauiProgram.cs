@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PayrollMaui.Services;
 using PayrollMaui.ViewModels;
@@ -12,13 +13,16 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+        builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+        var apiBaseUrl = builder.Configuration["ApiBaseUrl"]?.Trim() ?? "https://localhost:5001/";
+
         builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts => { })
-            .Services.AddSingleton<IEmployeeApiService, EmployeeApiService>()
-            .Services.AddHttpClient("PayrollApi", client =>
+            .Services.AddHttpClient<IEmployeeApiService, EmployeeApiService>(client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5001/");
+                client.BaseAddress = new Uri(apiBaseUrl);
             });
 
         var app = builder.Build();

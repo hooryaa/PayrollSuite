@@ -7,6 +7,7 @@
    Routing: it does not define a route. Its parent page handles navigation.
    API communication: it does not call the API directly. The parent component loads API results and passes them in.
 *@
+@using DevExpress.Blazor
 @if (Employees?.Any() != true)
 {
     <div class="empty-state">No employees match the filter.</div>
@@ -18,21 +19,21 @@ else
         <DxGridColumn Field="@nameof(EmployeeViewModel.FirstName)" Caption="First Name" />
         <DxGridColumn Field="@nameof(EmployeeViewModel.LastName)" Caption="Last Name" />
         <DxGridColumn Caption="Department">
-            <DataItemTemplate Context="employee">
-                @RenderDepartment(employee.DepartmentID)
+            <DataItemTemplate>
+                @RenderDepartment(@context.DepartmentID)
             </DataItemTemplate>
         </DxGridColumn>
         <DxGridColumn Caption="Hire Date">
-            <DataItemTemplate Context="employee">
-                @employee.HireDate.ToString("yyyy-MM-dd")
+            <DataItemTemplate>
+                @context.HireDate.ToString("yyyy-MM-dd")
             </DataItemTemplate>
         </DxGridColumn>
         <DxGridColumn Field="@nameof(EmployeeViewModel.IsActive)" Caption="Active" />
         <DxGridColumn Caption="Actions" Width="240px">
-            <DataItemTemplate Context="employee">
-                <DxButton ButtonType="ButtonType.Normal" Text="View" Click="@(() => OnViewEmployee.InvokeAsync(employee.EmployeeID))" />
-                <DxButton ButtonType="ButtonType.Normal" Text="Edit" Click="@(() => OnEditEmployee.InvokeAsync(employee.EmployeeID))" />
-                <DxButton ButtonType="ButtonType.Danger" Text="Delete" Click="@(() => OnDeleteEmployee.InvokeAsync(employee.EmployeeID))" />
+            <DataItemTemplate>
+                <DxButton ButtonType="ButtonType.Normal" Text="View" Click="@(() => OnViewEmployee.InvokeAsync(@context.EmployeeID))" />
+                <DxButton ButtonType="ButtonType.Normal" Text="Edit" Click="@(() => OnEditEmployee.InvokeAsync(@context.EmployeeID))" />
+                <DxButton ButtonType="ButtonType.Danger" Text="Delete" Click="@(() => OnDeleteEmployee.InvokeAsync(@context.EmployeeID))" />
             </DataItemTemplate>
         </DxGridColumn>
     </DxGrid>

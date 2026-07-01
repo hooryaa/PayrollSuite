@@ -1,3 +1,13 @@
+bin/
+obj/
+**/bin/
+**/obj/
+
+.vs/
+.vscode/
+
+*.user
+*.suo
 # Build folders
 bin/
 obj/
@@ -24,3 +34,21 @@ node_modules/
 
 # Local app settings
 appsettings.*.json
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+**/bin/
+**/obj/
+
+.vscode/
+
+TestResults/
+
+*.db
+*.sqlite
+
+# Secrets
+appsettings.Development.json

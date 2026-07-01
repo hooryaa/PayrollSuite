@@ -7,10 +7,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuration
 var configuration = builder.Configuration;
+var databaseProvider = configuration.GetValue<string>("DatabaseProvider")?.Trim() ?? "SqlServer";
 
 // Add DbContext
 builder.Services.AddDbContext<PayrollDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") ?? "Server=.;Database=Payroll;Trusted_Connection=True;"));
+{
+    if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseInMemoryDatabase("PayrollInMemory");
+    }
+    else
+    {
+        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing."));
+    }
+});
 
 // Add repositories and services
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
@@ -52,5 +63,10 @@ if (hasHttpsEndpoint)
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+{
+    await PayrollDbContextSeed.EnsureSeedDataAsync(app.Services);
+}
 
 app.Run();
