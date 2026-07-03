@@ -13,9 +13,16 @@ namespace PayrollApi.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<Employee>> GetAllAsync()
+        public async Task<(IEnumerable<Employee> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _db.Employees.AsNoTracking().ToListAsync();
+            var query = _db.Employees.AsNoTracking().OrderBy(e => e.EmployeeID);
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
 
         public async Task<Employee?> GetByIdAsync(int id)

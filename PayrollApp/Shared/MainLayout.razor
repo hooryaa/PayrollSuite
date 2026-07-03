@@ -1,16 +1,27 @@
 @inherits LayoutComponentBase
 
-<div class="layout">
-    <aside class="sidebar">
+<div class="dx-main-container">
+    <div class="dx-sidebar">
         <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <h1>Payroll Portal</h1>
-            <p>Access employees, review details, and manage staffing across departments.</p>
+    </div>
+
+    <div class="dx-content-wrapper">
+        <header class="dx-topbar">
+            <div class="dx-header-title">
+                <h1>Payroll Portal</h1>
+            </div>
+            <div class="dx-header-description">
+                <p>Access employees, review details, and manage staffing</p>
+            </div>
         </header>
-        <section class="content">
+
+        <main class="dx-main-content">
             @Body
-        </section>
-    </main>
+        </main>
+
+        <footer class="dx-footer">
+            <p>&copy; 2026 PayrollSuite. All rights reserved.</p>
+        </footer>
+    </div>
 </div>
+

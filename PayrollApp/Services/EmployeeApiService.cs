@@ -14,14 +14,14 @@ namespace PayrollApp.Services
 
         public async Task<List<EmployeeViewModel>> GetAllAsync()
         {
-            return await _client.GetFromJsonAsync<List<EmployeeViewModel>>("api/employees") ?? new List<EmployeeViewModel>();
+            return await _client.GetFromJsonAsync<List<EmployeeViewModel>>("api/v1/employees") ?? new List<EmployeeViewModel>();
         }
 
         public async Task<EmployeeViewModel?> GetByIdAsync(int id)
         {
             try
             {
-                return await _client.GetFromJsonAsync<EmployeeViewModel>($"api/employees/{id}");
+                return await _client.GetFromJsonAsync<EmployeeViewModel>($"api/v1/employees/{id}");
             }
             catch (HttpRequestException)
             {
@@ -46,7 +46,7 @@ namespace PayrollApp.Services
                 createModel.WorkEmail
             };
 
-            var response = await _client.PostAsJsonAsync("api/employees", request);
+            var response = await _client.PostAsJsonAsync("api/v1/employees", request);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<EmployeeViewModel>()
                 ?? throw new InvalidOperationException("Failed to deserialize created employee.");
@@ -66,13 +66,13 @@ namespace PayrollApp.Services
                 updateModel.EmploymentType
             };
 
-            var response = await _client.PutAsJsonAsync($"api/employees/{id}", request);
+            var response = await _client.PutAsJsonAsync($"api/v1/employees/{id}", request);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var response = await _client.DeleteAsync($"api/employees/{id}");
+            var response = await _client.DeleteAsync($"api/v1/employees/{id}");
             response.EnsureSuccessStatusCode();
         }
     }

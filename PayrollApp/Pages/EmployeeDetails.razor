@@ -2,45 +2,150 @@
 @inject IEmployeeApiService EmployeeService
 @inject NavigationManager NavigationManager
 
-@* Employee Details
-   Why it exists: shows a single employee's complete record and supports navigation to edit or delete.
-   Component lifecycle: loads the chosen employee in OnInitializedAsync.
-   Data binding: binds the employee object to the detail view.
-   Event handling: responds to edit and delete button clicks.
-   Dependency Injection: injects IEmployeeApiService to retrieve and delete the employee.
-   Routing: mapped to "/employees/{id}".
-   API communication: loads the employee record from the backend and sends delete requests.
+@* Employee Details - DevExpress Components
+   Modern employee detail view with professional layout
 *@
-<h2>Employee Details</h2>
+
+<div class="dx-page-header">
+    <h2>Employee Details</h2>
+    <p>View complete employee information</p>
+</div>
 
 @if (isLoading)
 {
-    <p>Loading employee details...</p>
+    <DxCard CssClass="dx-loading-card">
+        <CardBodyTemplate>
+            <div class="dx-loading-indicator">
+                <p>Loading employee details...</p>
+            </div>
+        </CardBodyTemplate>
+    </DxCard>
 }
 else if (employee is null)
 {
-    <p>Employee not found.</p>
+    <DxCard CssClass="dx-alert-card dx-alert-danger">
+        <CardBodyTemplate>
+            <div class="dx-alert-content">
+                <span class="dx-alert-icon">❌</span>
+                <p>Employee not found.</p>
+            </div>
+        </CardBodyTemplate>
+    </DxCard>
 }
 else
 {
-    <DxCard>
-        <div class="detail-grid">
-            <div><h3>@employee.FirstName @employee.LastName</h3></div>
-            <div><p>@employee.EmployeeNumber</p></div>
-            <div><strong>Email:</strong> @employee.Email</div>
-            <div><strong>Phone:</strong> @employee.Phone</div>
-            <div><strong>Hire Date:</strong> @employee.HireDate.ToString("yyyy-MM-dd")</div>
-            <div><strong>Employment Type:</strong> @employee.EmploymentType</div>
-            <div><strong>Department:</strong> @RenderDepartment(employee.DepartmentID)</div>
-            <div><strong>Active:</strong> @(employee.IsActive ? "Yes" : "No")</div>
-            <div><strong>Work Email:</strong> @employee.WorkEmail</div>
-        </div>
-        <div class="button-row">
-            <DxButton ButtonType="ButtonType.Normal" Text="Edit" Click="EditEmployee" />
-            <DxButton ButtonType="ButtonType.Danger" Text="Delete" Click="DeleteEmployee" />
-            <DxButton ButtonType="ButtonType.Secondary" Text="Back to list" Click="BackToList" />
-        </div>
+    <DxCard CssClass="dx-detail-card">
+        <CardHeaderTemplate>
+            <div class="dx-detail-header">
+                <div class="dx-employee-avatar">👤</div>
+                <div class="dx-employee-header">
+                    <h3>@employee.FirstName @employee.LastName</h3>
+                    <p class="dx-employee-number">@employee.EmployeeNumber</p>
+                    <span class="dx-badge @(employee.IsActive ? "dx-badge-success" : "dx-badge-inactive")">
+                        @(employee.IsActive ? "Active" : "Inactive")
+                    </span>
+                </div>
+            </div>
+        </CardHeaderTemplate>
+        <CardBodyTemplate>
+            <div class="dx-detail-grid">
+                <div class="dx-detail-group">
+                    <h4 class="dx-detail-group-title">Contact Information</h4>
+                    <div class="dx-detail-row">
+                        <div class="dx-detail-item">
+                            <label>Personal Email</label>
+                            <p class="dx-detail-value">@employee.Email</p>
+                        </div>
+                        <div class="dx-detail-item">
+                            <label>Work Email</label>
+                            <p class="dx-detail-value">@employee.WorkEmail</p>
+                        </div>
+                    </div>
+                    <div class="dx-detail-row">
+                        <div class="dx-detail-item">
+                            <label>Phone</label>
+                            <p class="dx-detail-value">@employee.Phone</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dx-detail-group">
+                    <h4 class="dx-detail-group-title">Employment Details</h4>
+                    <div class="dx-detail-row">
+                        <div class="dx-detail-item">
+                            <label>Hire Date</label>
+                            <p class="dx-detail-value">@employee.HireDate.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        <div class="dx-detail-item">
+                            <label>Employment Type</label>
+                            <p class="dx-detail-value">@employee.EmploymentType</p>
+                        </div>
+                    </div>
+                    <div class="dx-detail-row">
+                        <div class="dx-detail-item">
+                            <label>Department</label>
+                            <p class="dx-detail-value">@RenderDepartment(employee.DepartmentID)</p>
+                        </div>
+                        <div class="dx-detail-item">
+                            <label>Position ID</label>
+                            <p class="dx-detail-value">@(employee.PositionID?.ToString() ?? "N/A")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </CardBodyTemplate>
     </DxCard>
+
+    <DxToolbar CssClass="dx-details-toolbar">
+        <DxToolbarItem>
+            <Template>
+                <DxButton Text="Edit Employee"
+                          RenderStyle="ButtonRenderStyle.Primary"
+                          IconCssClass="oi oi-pencil"
+                          Click="@EditEmployee"
+                          CssClass="dx-toolbar-button" />
+            </Template>
+        </DxToolbarItem>
+        <DxToolbarItem>
+            <Template>
+                <DxButton Text="Delete"
+                          RenderStyle="ButtonRenderStyle.Danger"
+                          IconCssClass="oi oi-trash"
+                          Click="@DeleteConfirm"
+                          CssClass="dx-toolbar-button" />
+            </Template>
+        </DxToolbarItem>
+        <DxToolbarItem>
+            <Template>
+                <DxButton Text="Back to List"
+                          RenderStyle="ButtonRenderStyle.Secondary"
+                          IconCssClass="oi oi-arrow-left"
+                          Click="@BackToList"
+                          CssClass="dx-toolbar-button" />
+            </Template>
+        </DxToolbarItem>
+    </DxToolbar>
+
+    <DxPopup @ref="deletePopup" 
+            HeaderText="Confirm Delete" 
+            CssClass="dx-confirm-dialog"
+            AllowResize="false"
+            AllowDrag="false">
+        <BodyTemplate>
+            <div class="dx-dialog-content">
+                <p>Are you sure you want to delete <strong>@employee.FirstName @employee.LastName</strong>?</p>
+                <p class="dx-warning-text">This action cannot be undone.</p>
+                <div class="dx-dialog-actions">
+                    <DxButton Text="Cancel" 
+                             RenderStyle="ButtonRenderStyle.Secondary"
+                             Click="@(async () => await deletePopup.CloseAsync())" />
+                    <DxButton Text="Delete" 
+                             RenderStyle="ButtonRenderStyle.Danger"
+                             Click="@DeleteEmployee" />
+                </div>
+            </div>
+        </BodyTemplate>
+    </DxPopup>
 }
 
 @code {
@@ -49,6 +154,7 @@ else
 
     private EmployeeViewModel? employee;
     private bool isLoading = true;
+    private DxPopup deletePopup = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,8 +167,14 @@ else
         NavigationManager.NavigateTo($"/employees/edit/{EmployeeId}");
     }
 
+    private async Task DeleteConfirm()
+    {
+        await deletePopup.ShowAsync();
+    }
+
     private async Task DeleteEmployee()
     {
+        await deletePopup.CloseAsync();
         await EmployeeService.DeleteAsync(EmployeeId);
         NavigationManager.NavigateTo("/employees");
     }

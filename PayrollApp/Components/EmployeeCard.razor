@@ -1,16 +1,17 @@
-@* EmployeeCard
-   Why it exists: renders a reusable KPI card for summaries and dashboard stats.
-   Component lifecycle: initial render shows placeholder values; parameters are supplied from the parent Dashboard after data loads.
-   Data binding: the Title, Value, and Detail parameters are bound from parent component data.
-   Event handling: this component is purely presentational and does not raise events.
-   Dependency Injection: it has no injected services. It receives data from the parent by parameter binding.
-   Routing: it does not participate in routing directly.
-   API communication: it does not call the API itself; the parent dashboard loads data and passes summaries into the card.
+@* EmployeeCard - DevExpress Card Component
+   Renders a modern KPI card using DxCard for dashboard statistics.
+   Component lifecycle: initial render shows placeholder; parent supplies data after loading.
+   Data binding: Title, Value, and Detail parameters bound from parent.
+   Event handling: purely presentational.
+   Dependency Injection: receives data via parameters.
 *@
-<div class="metric-card">
-    <div class="metric-title">@Title</div>
-    <div class="metric-value">@Value</div>
-    <div class="metric-detail">@Detail</div>
+
+<div class="dx-metric-card dx-card">
+    <div class="dx-card-stat-container">
+        <div class="dx-card-stat-title">@Title</div>
+        <div class="dx-card-stat-value">@Value</div>
+        <div class="dx-card-stat-detail">@Detail</div>
+    </div>
 </div>
 
 @code {

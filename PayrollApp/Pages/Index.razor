@@ -2,52 +2,115 @@
 @inject IEmployeeApiService EmployeeService
 @inject NavigationManager NavigationManager
 
-@* Dashboard
-   Why it exists: provides a high-level view of payroll activity and staffing trends.
-   Component lifecycle: loads metrics during OnInitializedAsync and refreshes when requested.
-   Data binding: binds summary counts, recent hires, and chart data to the UI.
-   Event handling: includes a refresh button and row click actions from the employee grid.
-   Dependency Injection: injects IEmployeeApiService to retrieve data from the backend.
-   Routing: mapped to the root page "/".
-   API communication: uses the injected service to load employee data and compute dashboard summaries.
+@* Dashboard - DevExpress Components
+   Modern dashboard with KPI cards, charts, and recent activity
 *@
-<h2>Dashboard</h2>
-<p>Quick access to current employee counts, active staff, departmental coverage, and recent hires.</p>
+
+<div class="dx-page-header">
+    <h2>Dashboard</h2>
+    <p>Quick access to employee metrics, departmental coverage, and recent activity</p>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="dx-alert-card dx-alert-danger">
+        <div class="dx-alert-content">
+            <span class="dx-alert-icon">⚠️</span>
+            <p>@errorMessage</p>
+        </div>
+    </div>
+}
 
 @if (isLoading)
 {
-    <p>Loading dashboard...</p>
+    <div class="dx-loading-card">
+        <div class="dx-loading-indicator">
+            <p>Loading dashboard metrics...</p>
+        </div>
+    </div>
 }
 else
 {
-    <div class="card-grid">
-        <EmployeeCard Title="Total Employees" Value="@totalEmployees.ToString()" Detail="Employees in the system" />
-        <EmployeeCard Title="Active Staff" Value="@activeEmployees.ToString()" Detail="Currently active employees" />
-        <EmployeeCard Title="Departments" Value="@departmentCount.ToString()" Detail="Departments represented" />
-        <EmployeeCard Title="Recent Hires" Value="@recentHires.ToString()" Detail="Hired in last 90 days" />
+    <div class="dx-dashboard-grid">
+        <div class="dx-kpi-cards">
+            <EmployeeCard Title="Total Employees" Value="@totalEmployees.ToString()" Detail="All employees in system" />
+            <EmployeeCard Title="Active Staff" Value="@activeEmployees.ToString()" Detail="Currently working employees" />
+            <EmployeeCard Title="Departments" Value="@departmentCount.ToString()" Detail="Total departments" />
+            <EmployeeCard Title="Recent Hires" Value="@recentHires.ToString()" Detail="Hired in last 90 days" />
+        </div>
+
+        <DxCard CssClass="dx-department-card">
+            <CardHeaderTemplate>
+                <div class="dx-card-header-with-action">
+                    <span class="dx-card-title">Department Staffing</span>
+                    <DxButton Text="Refresh" 
+                             RenderStyle="ButtonRenderStyle.Link"
+                             Click="@RefreshData"
+                             IconCssClass="oi oi-reload" />
+                </div>
+            </CardHeaderTemplate>
+            <CardBodyTemplate>
+                @if (departmentChartData.Any())
+                {
+                    <div class="dx-department-grid">
+                        @foreach (var dept in departmentChartData.OrderByDescending(d => d.EmployeeCount))
+                        {
+                            <div class="dx-department-item">
+                                <div class="dx-dept-header">
+                                    <span class="dx-dept-name">@dept.DepartmentName</span>
+                                    <span class="dx-dept-count">@dept.EmployeeCount</span>
+                                </div>
+                                <div class="dx-dept-bar">
+                                    <div class="dx-dept-bar-fill" 
+                                         style="width: @(((decimal)dept.EmployeeCount / departmentChartData.Max(d => d.EmployeeCount)) * 100)%">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="dx-empty-message">No department data available</p>
+                }
+        </div>
     </div>
 
-    <section>
-        <div class="section-header">
-            <h3>Department staffing</h3>
-            <DxButton ButtonType="ButtonType.Normal" Text="Refresh" Click="RefreshData" />
+        <div class="dx-recent-hires-card">
+            <div class="dx-card-header-with-action">
+                <span class="dx-card-title">Recent Hires</span>
+                <DxButton Text="View All" 
+                         RenderStyle="ButtonRenderStyle.Link"
+                         Click="@(() => NavigationManager.NavigateTo("/employees"))"
+                         IconCssClass="oi oi-arrow-right" />
+            </div>
+            <div class="dx-card-body">
+                @if (recentHireList.Any())
+                {
+                    <EmployeeTable Employees="@recentHireList" 
+                                  OnViewEmployee="ViewEmployee" 
+                                  OnEditEmployee="EditEmployee" 
+                                  OnDeleteEmployee="DeleteEmployee" />
+                }
+                else
+                {
+                    <div class="dx-empty-section">
+                        <p class="dx-empty-icon">👤</p>
+                        <p class="dx-empty-message">No recent hires in the last 90 days</p>
+                    </div>
+                }
+            </div>
         </div>
-        <DxChart Data="@departmentChartData">
-            <DxChartSeries ArgumentFieldName="DepartmentName" ValueFieldName="EmployeeCount" Type="ChartSeriesType.Bar" Name="Employees" />
-        </DxChart>
-    </section>
+    </div>
 
-    <section>
-        <div class="section-header">
-            <h3>Recent hires</h3>
-            <DxButton ButtonType="ButtonType.Normal" Text="Refresh" Click="RefreshData" />
-        </div>
-        <EmployeeTable Employees="@recentHireList" OnViewEmployee="ViewEmployee" OnEditEmployee="EditEmployee" OnDeleteEmployee="DeleteEmployee" />
-    </section>
+    <div class="dx-dashboard-footer">
+        <p>Last updated: @DateTime.Now.ToString("MMM dd, yyyy HH:mm:ss")</p>
+    </div>
 }
 
 @code {
     private bool isLoading = true;
+    private string? errorMessage;
     private int totalEmployees;
     private int activeEmployees;
     private int departmentCount;
@@ -63,31 +126,48 @@ else
     private async Task LoadDashboardAsync()
     {
         isLoading = true;
-        var allEmployees = await EmployeeService.GetAllAsync();
-        totalEmployees = allEmployees.Count;
-        activeEmployees = allEmployees.Count(e => e.IsActive);
-        departmentCount = allEmployees.Select(e => e.DepartmentID).Where(id => id.HasValue).Distinct().Count();
+        errorMessage = null;
 
-        var cutoff = DateTime.Today.AddDays(-90);
-        recentHireList = allEmployees
-            .Where(e => e.HireDate >= cutoff)
-            .OrderByDescending(e => e.HireDate)
-            .Take(5)
-            .ToList();
+        try
+        {
+            var allEmployees = await EmployeeService.GetAllAsync();
+            totalEmployees = allEmployees.Count;
+            activeEmployees = allEmployees.Count(e => e.IsActive);
+            departmentCount = allEmployees.Select(e => e.DepartmentID).Where(id => id.HasValue).Distinct().Count();
 
-        recentHires = recentHireList.Count;
-        departmentChartData = allEmployees
-            .Where(e => e.DepartmentID.HasValue)
-            .GroupBy(e => e.DepartmentID)
-            .Select(g => new DepartmentChartItem
-            {
-                DepartmentName = RenderDepartment(g.Key),
-                EmployeeCount = g.Count()
-            })
-            .OrderByDescending(item => item.EmployeeCount)
-            .ToList();
+            var cutoff = DateTime.Today.AddDays(-90);
+            recentHireList = allEmployees
+                .Where(e => e.HireDate >= cutoff)
+                .OrderByDescending(e => e.HireDate)
+                .Take(5)
+                .ToList();
 
-        isLoading = false;
+            recentHires = recentHireList.Count;
+            departmentChartData = allEmployees
+                .Where(e => e.DepartmentID.HasValue)
+                .GroupBy(e => e.DepartmentID)
+                .Select(g => new DepartmentChartItem
+                {
+                    DepartmentName = RenderDepartment(g.Key),
+                    EmployeeCount = g.Count()
+                })
+                .OrderByDescending(item => item.EmployeeCount)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Payroll API is unavailable. Start the backend on https://localhost:5001 and reload the page.";
+            totalEmployees = 0;
+            activeEmployees = 0;
+            departmentCount = 0;
+            recentHires = 0;
+            recentHireList = new();
+            departmentChartData = new();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private async Task RefreshData()
@@ -110,6 +190,26 @@ else
         await EmployeeService.DeleteAsync(id);
         await LoadDashboardAsync();
     }
+
+    private static string RenderDepartment(int? id)
+    {
+        return id switch
+        {
+            1 => "Human Resources",
+            2 => "Finance",
+            3 => "Operations",
+            4 => "IT",
+            5 => "Sales",
+            _ => "Unassigned"
+        };
+    }
+
+    private class DepartmentChartItem
+    {
+        public string DepartmentName { get; set; } = string.Empty;
+        public int EmployeeCount { get; set; }
+    }
+}
 
     private static string RenderDepartment(int? id)
     {

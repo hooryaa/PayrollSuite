@@ -4,7 +4,7 @@ namespace PayrollApi.Repositories
 {
     public interface IEmployeeRepository
     {
-        Task<IEnumerable<Employee>> GetAllAsync();
+        Task<(IEnumerable<Employee> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize);
         Task<Employee?> GetByIdAsync(int id);
         Task AddAsync(Employee employee);
         void Update(Employee employee);

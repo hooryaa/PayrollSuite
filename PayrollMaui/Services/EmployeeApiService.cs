@@ -14,7 +14,7 @@ public class EmployeeApiService : IEmployeeApiService
 
     public async Task<List<EmployeeModel>> GetEmployeesAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<EmployeeModel>>("api/employees")
+        return await _httpClient.GetFromJsonAsync<List<EmployeeModel>>("api/v1/employees")
                ?? new List<EmployeeModel>();
     }
 
@@ -22,7 +22,7 @@ public class EmployeeApiService : IEmployeeApiService
     {
         try
         {
-            return await _httpClient.GetFromJsonAsync<EmployeeModel>($"api/employees/{id}");
+            return await _httpClient.GetFromJsonAsync<EmployeeModel>($"api/v1/employees/{id}");
         }
         catch (HttpRequestException)
         {

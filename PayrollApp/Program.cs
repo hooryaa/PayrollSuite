@@ -1,14 +1,15 @@
-using DevExpress.Blazor;
 using PayrollApp.Services;
+using DevExpress.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDevExpressBlazor();
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? throw new InvalidOperationException("ApiBaseUrl is required in PayrollApp appsettings.json.");
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDevExpressBlazor();
 builder.Services.AddHttpClient<IEmployeeApiService, EmployeeApiService>(client =>
 {
-    var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:5001/";
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 

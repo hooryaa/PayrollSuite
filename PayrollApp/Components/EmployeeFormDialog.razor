@@ -1,0 +1,205 @@
+@using DevExpress.Blazor
+@using PayrollApp.Models
+
+<EditForm Model="@workingModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <DxFormLayout CssClass="dx-employee-form-layout">
+        <DxFormLayoutGroup Caption="Personal Information" ColSpanMd="12">
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Employee Number</label>
+                    <DxTextBox @bind-Value="workingModel.EmployeeNumber"
+                               Enabled="@(!IsEdit)"
+                               CssClass="dx-textbox-full" />
+                    <ValidationMessage For="@(() => workingModel.EmployeeNumber)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Employment Type</label>
+                    <DxComboBox Data="@employmentTypes"
+                               @bind-Value="workingModel.EmploymentType"
+                               ValueFieldName="@(string.Empty)"
+                               TextFieldName="@(string.Empty)"
+                               CssClass="dx-combobox-full"
+                               AllowUserInput="false" />
+                    <ValidationMessage For="@(() => workingModel.EmploymentType)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">First Name *</label>
+                    <DxTextBox @bind-Value="workingModel.FirstName" CssClass="dx-textbox-full" />
+                    <ValidationMessage For="@(() => workingModel.FirstName)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Last Name *</label>
+                    <DxTextBox @bind-Value="workingModel.LastName" CssClass="dx-textbox-full" />
+                    <ValidationMessage For="@(() => workingModel.LastName)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Email *</label>
+                    <DxTextBox @bind-Value="workingModel.Email"
+                              InputType="InputType.Email"
+                              CssClass="dx-textbox-full" />
+                    <ValidationMessage For="@(() => workingModel.Email)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Work Email</label>
+                    <DxTextBox @bind-Value="workingModel.WorkEmail"
+                              InputType="InputType.Email"
+                              CssClass="dx-textbox-full" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Phone *</label>
+                    <DxTextBox @bind-Value="workingModel.Phone"
+                              InputType="InputType.Tel"
+                              CssClass="dx-textbox-full" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Department</label>
+                    <DxComboBox Data="@departmentOptions"
+                               @bind-Value="workingModel.DepartmentID"
+                               ValueFieldName="Key"
+                               TextFieldName="Value"
+                               CssClass="dx-combobox-full"
+                               AllowUserInput="false" />
+                </Template>
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+
+        <DxFormLayoutGroup Caption="Employment Details" ColSpanMd="12">
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Hire Date *</label>
+                    <DxDateEdit @bind-Value="workingModel.HireDate"
+                               T="DateTime"
+                               Enabled="true"
+                               CssClass="dx-dateedit-full" />
+                    <ValidationMessage For="@(() => workingModel.HireDate)" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="6">
+                <Template Context="ignored">
+                    <label class="dx-form-label">Position ID</label>
+                    <DxSpinEdit @bind-Value="workingModel.PositionID" CssClass="dx-spinedit-full" />
+                </Template>
+            </DxFormLayoutItem>
+
+            <DxFormLayoutItem ColSpanMd="12">
+                <Template Context="ignored">
+                    <div class="dx-checkbox-wrapper">
+                        <DxCheckBox @bind-Checked="workingModel.IsActive" />
+                        <label class="dx-checkbox-label">Active Employee</label>
+                    </div>
+                </Template>
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+
+        <DxFormLayoutGroup Caption="Actions" ColSpanMd="12">
+            <DxFormLayoutItem ColSpanMd="12">
+                <Template Context="ignored">
+                    <div class="dx-form-actions">
+                        <DxButton Text="Save"
+                                  RenderStyle="ButtonRenderStyle.Primary"
+                                  ButtonType="ButtonType.Submit"
+                                  IconCssClass="oi oi-check"
+                                  Disabled="@IsBusy"
+                                  CssClass="dx-action-button" />
+                        <DxButton Text="Cancel"
+                                  RenderStyle="ButtonRenderStyle.Secondary"
+                                  Click="Cancel"
+                                  IconCssClass="oi oi-x"
+                                  CssClass="dx-action-button" />
+                    </div>
+                </Template>
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
+
+    <ValidationSummary />
+</EditForm>
+
+@code {
+    [Parameter]
+    public EmployeeEditModel Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    [Parameter]
+    public bool IsBusy { get; set; }
+
+    [Parameter]
+    public EventCallback<EmployeeEditModel> OnValidSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private EmployeeEditModel workingModel = new();
+
+    private readonly List<KeyValuePair<int, string>> departmentOptions = new()
+    {
+        new KeyValuePair<int, string>(1, "Human Resources"),
+        new KeyValuePair<int, string>(2, "Finance"),
+        new KeyValuePair<int, string>(3, "Operations"),
+        new KeyValuePair<int, string>(4, "IT"),
+        new KeyValuePair<int, string>(5, "Sales")
+    };
+
+    private readonly List<string> employmentTypes = new()
+    {
+        "FullTime",
+        "PartTime",
+        "Contract",
+        "Intern"
+    };
+
+    protected override void OnParametersSet()
+    {
+        workingModel = new EmployeeEditModel
+        {
+            EmployeeID = Model.EmployeeID,
+            EmployeeNumber = Model.EmployeeNumber,
+            FirstName = Model.FirstName,
+            LastName = Model.LastName,
+            Email = Model.Email,
+            Phone = Model.Phone,
+            HireDate = Model.HireDate == default ? DateTime.Today : Model.HireDate,
+            IsActive = Model.IsActive,
+            DepartmentID = Model.DepartmentID,
+            PositionID = Model.PositionID,
+            EmploymentType = string.IsNullOrWhiteSpace(Model.EmploymentType) ? "FullTime" : Model.EmploymentType,
+            WorkEmail = Model.WorkEmail
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnValidSubmit.InvokeAsync(workingModel);
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

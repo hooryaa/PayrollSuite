@@ -15,7 +15,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-        var apiBaseUrl = builder.Configuration["ApiBaseUrl"]?.Trim() ?? "https://localhost:5001/";
+        var apiBaseUrl = builder.Configuration["ApiBaseUrl"]?.Trim() ?? throw new InvalidOperationException("ApiBaseUrl is required in PayrollMaui appsettings.json.");
 
         builder
             .UseMauiApp<App>()

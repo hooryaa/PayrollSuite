@@ -13,10 +13,10 @@ namespace PayrollApi.Services
             _repo = repo;
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllAsync()
+        public async Task<(IEnumerable<EmployeeDto> Items, int TotalCount)> GetAllAsync(int pageNumber, int pageSize)
         {
-            var list = await _repo.GetAllAsync();
-            return list.Select(MapToDto);
+            var (items, totalCount) = await _repo.GetAllAsync(pageNumber, pageSize);
+            return (items.Select(MapToDto), totalCount);
         }
 
         public async Task<EmployeeDto?> GetByIdAsync(int id)
