@@ -14,18 +14,16 @@
 
 @if (isLoading)
 {
-    <DxCard CssClass="dx-loading-card">
-        <CardBodyTemplate>
-            <div class="dx-loading-spinner">
-                <p>Loading form...</p>
-            </div>
-        </CardBodyTemplate>
-    </DxCard>
+    <div class="dx-loading-card">
+        <div class="dx-loading-spinner">
+            <p>Loading form...</p>
+        </div>
+    </div>
 }
 else
 {
-    <DxCard CssClass="dx-form-card">
-        <CardBodyTemplate>
+    <div class="dx-form-card">
+        <div class="dx-card-body">
             <EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
 
@@ -34,9 +32,9 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Employee Number</label>
-                                <DxTextBox @bind-Value="@formModel.EmployeeNumber" 
-                                          Enabled="@(!isEdit)"
-                                          CssClass="dx-textbox-full" />
+                                <DxTextBox @bind-Text="@formModel.EmployeeNumber"
+                                           Enabled="@(!isEdit)"
+                                           CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.EmployeeNumber)" />
                             </Template>
                         </DxFormLayoutItem>
@@ -46,8 +44,6 @@ else
                                 <label class="dx-form-label">Employment Type</label>
                                 <DxComboBox Data="@employmentTypes"
                                            @bind-Value="@formModel.EmploymentType"
-                                           ValueFieldName="@(string.Empty)"
-                                           TextFieldName="@(string.Empty)"
                                            CssClass="dx-combobox-full"
                                            AllowUserInput="false" />
                                 <ValidationMessage For="@(() => formModel.EmploymentType)" />
@@ -57,7 +53,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">First Name *</label>
-                                <DxTextBox @bind-Value="@formModel.FirstName" CssClass="dx-textbox-full" />
+                                <DxTextBox @bind-Text="@formModel.FirstName" CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.FirstName)" />
                             </Template>
                         </DxFormLayoutItem>
@@ -65,7 +61,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Last Name *</label>
-                                <DxTextBox @bind-Value="@formModel.LastName" CssClass="dx-textbox-full" />
+                                <DxTextBox @bind-Text="@formModel.LastName" CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.LastName)" />
                             </Template>
                         </DxFormLayoutItem>
@@ -73,7 +69,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Email *</label>
-                                <DxTextBox @bind-Value="@formModel.Email" 
+                                <DxTextBox @bind-Text="@formModel.Email"
                                           InputType="InputType.Email"
                                           CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.Email)" />
@@ -83,7 +79,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Work Email</label>
-                                <DxTextBox @bind-Value="@formModel.WorkEmail" 
+                                <DxTextBox @bind-Text="@formModel.WorkEmail"
                                           InputType="InputType.Email"
                                           CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.WorkEmail)" />
@@ -93,7 +89,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Phone *</label>
-                                <DxTextBox @bind-Value="@formModel.Phone" 
+                                <DxTextBox @bind-Text="@formModel.Phone"
                                           InputType="InputType.Tel"
                                           CssClass="dx-textbox-full" />
                                 <ValidationMessage For="@(() => formModel.Phone)" />
@@ -117,7 +113,7 @@ else
                         <DxFormLayoutItem ColSpanMd="6">
                             <Template Context="ignored">
                                 <label class="dx-form-label">Hire Date *</label>
-                                <DxDateEdit @bind-Value="@formModel.HireDate" 
+                                <DxDateEdit @bind-Date="@formModel.HireDate"
                                            T="DateTime"
                                            Enabled="@(!isEdit)"
                                            CssClass="dx-dateedit-full" />
@@ -146,12 +142,12 @@ else
                         <DxFormLayoutItem ColSpanMd="12">
                             <Template Context="ignored">
                                 <div class="dx-form-actions">
-                                    <DxButton Text="Save" 
+                                    <DxButton Text="Save"
                                              RenderStyle="ButtonRenderStyle.Primary"
                                              ButtonType="ButtonType.Submit"
                                              IconCssClass="oi oi-check"
                                              CssClass="dx-action-button" />
-                                    <DxButton Text="Cancel" 
+                                    <DxButton Text="Cancel"
                                              RenderStyle="ButtonRenderStyle.Secondary"
                                              Click="@Cancel"
                                              IconCssClass="oi oi-x"
@@ -166,8 +162,8 @@ else
                     <ValidationSummary />
                 </div>
             </EditForm>
-        </CardBodyTemplate>
-    </DxCard>
+        </div>
+    </div>
 }
 
 @code {

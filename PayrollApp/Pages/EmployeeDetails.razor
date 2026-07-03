@@ -13,41 +13,35 @@
 
 @if (isLoading)
 {
-    <DxCard CssClass="dx-loading-card">
-        <CardBodyTemplate>
-            <div class="dx-loading-indicator">
-                <p>Loading employee details...</p>
-            </div>
-        </CardBodyTemplate>
-    </DxCard>
+    <div class="dx-loading-card">
+        <div class="dx-loading-indicator">
+            <p>Loading employee details...</p>
+        </div>
+    </div>
 }
 else if (employee is null)
 {
-    <DxCard CssClass="dx-alert-card dx-alert-danger">
-        <CardBodyTemplate>
-            <div class="dx-alert-content">
-                <span class="dx-alert-icon">❌</span>
-                <p>Employee not found.</p>
-            </div>
-        </CardBodyTemplate>
-    </DxCard>
+    <div class="dx-alert-card dx-alert-danger">
+        <div class="dx-alert-content">
+            <span class="dx-alert-icon">❌</span>
+            <p>Employee not found.</p>
+        </div>
+    </div>
 }
 else
 {
-    <DxCard CssClass="dx-detail-card">
-        <CardHeaderTemplate>
-            <div class="dx-detail-header">
-                <div class="dx-employee-avatar">👤</div>
-                <div class="dx-employee-header">
-                    <h3>@employee.FirstName @employee.LastName</h3>
-                    <p class="dx-employee-number">@employee.EmployeeNumber</p>
-                    <span class="dx-badge @(employee.IsActive ? "dx-badge-success" : "dx-badge-inactive")">
-                        @(employee.IsActive ? "Active" : "Inactive")
-                    </span>
-                </div>
+    <div class="dx-detail-card">
+        <div class="dx-detail-header">
+            <div class="dx-employee-avatar">👤</div>
+            <div class="dx-employee-header">
+                <h3>@employee.FirstName @employee.LastName</h3>
+                <p class="dx-employee-number">@employee.EmployeeNumber</p>
+                <span class="dx-badge @(employee.IsActive ? "dx-badge-success" : "dx-badge-inactive")">
+                    @(employee.IsActive ? "Active" : "Inactive")
+                </span>
             </div>
-        </CardHeaderTemplate>
-        <CardBodyTemplate>
+        </div>
+        <div class="dx-card-body">
             <div class="dx-detail-grid">
                 <div class="dx-detail-group">
                     <h4 class="dx-detail-group-title">Contact Information</h4>
@@ -93,8 +87,8 @@ else
                     </div>
                 </div>
             </div>
-        </CardBodyTemplate>
-    </DxCard>
+        </div>
+    </div>
 
     <DxToolbar CssClass="dx-details-toolbar">
         <DxToolbarItem>

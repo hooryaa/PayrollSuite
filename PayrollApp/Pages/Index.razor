@@ -39,17 +39,15 @@ else
             <EmployeeCard Title="Recent Hires" Value="@recentHires.ToString()" Detail="Hired in last 90 days" />
         </div>
 
-        <DxCard CssClass="dx-department-card">
-            <CardHeaderTemplate>
-                <div class="dx-card-header-with-action">
-                    <span class="dx-card-title">Department Staffing</span>
-                    <DxButton Text="Refresh" 
-                             RenderStyle="ButtonRenderStyle.Link"
-                             Click="@RefreshData"
-                             IconCssClass="oi oi-reload" />
-                </div>
-            </CardHeaderTemplate>
-            <CardBodyTemplate>
+        <div class="dx-department-card">
+            <div class="dx-card-header-with-action">
+                <span class="dx-card-title">Department Staffing</span>
+                <DxButton Text="Refresh" 
+                         RenderStyle="ButtonRenderStyle.Link"
+                         Click="@RefreshData"
+                         IconCssClass="oi oi-reload" />
+            </div>
+            <div class="dx-card-body">
                 @if (departmentChartData.Any())
                 {
                     <div class="dx-department-grid">
@@ -73,8 +71,8 @@ else
                 {
                     <p class="dx-empty-message">No department data available</p>
                 }
+            </div>
         </div>
-    </div>
 
         <div class="dx-recent-hires-card">
             <div class="dx-card-header-with-action">
@@ -211,22 +209,3 @@ else
     }
 }
 
-    private static string RenderDepartment(int? id)
-    {
-        return id switch
-        {
-            1 => "Human Resources",
-            2 => "Finance",
-            3 => "Operations",
-            4 => "IT",
-            5 => "Sales",
-            _ => "Unassigned"
-        };
-    }
-
-    private class DepartmentChartItem
-    {
-        public string DepartmentName { get; set; } = string.Empty;
-        public int EmployeeCount { get; set; }
-    }
-}

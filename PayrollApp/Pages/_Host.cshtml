@@ -9,13 +9,15 @@
     <title>Payroll Dashboard</title>
     <base href="~/" />
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="_content/DevExpress.Blazor/dx-blazor.css" />
+    <!-- DevExpress 25.1 Fluent theme and core styles -->
+    <link rel="stylesheet" href="_content/DevExpress.Blazor.Themes.Fluent/core.min.css" />
 </head>
 <body>
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" />
     </app>
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/DevExpress.Blazor/dx-blazor.js"></script>
+    <!-- DevExpress 25.1 runtime script -->
+    <script src="_content/DevExpress.Blazor/modules/dx-blazor-all.js"></script>
 </body>
 </html>

@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <!-- Override the default external XAML compiler path so the managed XAML compile task can run in this environment -->
-    <UseXamlCompilerExecutable>false</UseXamlCompilerExecutable>
-  </PropertyGroup>
-</Project>

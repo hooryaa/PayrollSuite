@@ -32,45 +32,45 @@ else
         <DxGridDataColumn FieldName="FirstName" Caption="First Name" Width="15%" />
         <DxGridDataColumn FieldName="LastName" Caption="Last Name" Width="15%" />
         <DxGridDataColumn FieldName="DepartmentName" Caption="Department" Width="18%" SortOrder="GridColumnSortOrder.Ascending">
-            <DisplayTemplate>
-                @RenderDepartment(GetDepartmentId((EmployeeViewModel)context))
-            </DisplayTemplate>
+            <CellDisplayTemplate Context="context">
+                @{ var employee = (EmployeeViewModel)context.DataItem; }
+                @RenderDepartment(employee.DepartmentID)
+            </CellDisplayTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="HireDate" Caption="Hire Date" Width="14%">
-            <DisplayTemplate>
-                @((EmployeeViewModel)context).HireDate.ToString("MMM dd, yyyy")
-            </DisplayTemplate>
+            <CellDisplayTemplate Context="context">
+                @{ var employee = (EmployeeViewModel)context.DataItem; }
+                @employee.HireDate.ToString("MMM dd, yyyy")
+            </CellDisplayTemplate>
         </DxGridDataColumn>
         <DxGridDataColumn FieldName="IsActive" Caption="Status" Width="12%">
-            <DisplayTemplate>
-                @{
-                    var emp = (EmployeeViewModel)context;
-                    var statusClass = emp.IsActive ? "dx-badge-success" : "dx-badge-inactive";
-                    var statusText = emp.IsActive ? "Active" : "Inactive";
+            <CellDisplayTemplate Context="context">
+                @{ 
+                    var employee = (EmployeeViewModel)context.DataItem;
+                    var statusClass = employee.IsActive ? "dx-badge-success" : "dx-badge-inactive";
+                    var statusText = employee.IsActive ? "Active" : "Inactive";
                 }
                 <span class="dx-badge @statusClass">@statusText</span>
-            </DisplayTemplate>
+            </CellDisplayTemplate>
         </DxGridDataColumn>
         
         <DxGridCommandColumn Width="14%">
             <CellDisplayTemplate Context="context">
-                @{
-                    var emp = (EmployeeViewModel)context;
-                }
+                @{ var employee = (EmployeeViewModel)context.DataItem; }
                 <DxButton RenderStyle="ButtonRenderStyle.Link" 
                           Text="View" 
                           IconCssClass="oi oi-eye"
-                          Click="@(async () => await OnViewEmployee.InvokeAsync(emp.EmployeeID))" />
+                          Click="@(async () => await OnViewEmployee.InvokeAsync(employee.EmployeeID))" />
                 
                 <DxButton RenderStyle="ButtonRenderStyle.Link" 
                           Text="Edit" 
                           IconCssClass="oi oi-pencil"
-                          Click="@(async () => await OnEditEmployee.InvokeAsync(emp.EmployeeID))" />
+                          Click="@(async () => await OnEditEmployee.InvokeAsync(employee.EmployeeID))" />
                 
                 <DxButton RenderStyle="ButtonRenderStyle.Link" 
                           Text="Delete" 
                           IconCssClass="oi oi-trash"
-                          Click="@(async () => await ConfirmDelete(emp.EmployeeID))" />
+                          Click="@(async () => await ConfirmDelete(employee.EmployeeID))" />
             </CellDisplayTemplate>
         </DxGridCommandColumn>
     </DxGrid>

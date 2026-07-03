@@ -1,0 +1,1 @@
+Patch: add app.UseDevExpressBlazor(); and replace DxTextBox @bind-Value with @bind-Text in key files.

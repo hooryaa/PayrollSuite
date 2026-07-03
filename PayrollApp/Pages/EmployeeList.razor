@@ -30,7 +30,7 @@
             <div class="dx-toolbar-search-row">
                 <DxTextBox Placeholder="Search employees..."
                           @bind-Text="toolbarSearchTerm"
-                          ClearButtonDisplayMode="ClearButtonDisplayMode.Auto"
+                          ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
                           CssClass="dx-toolbar-search" />
                 <DxComboBox Data="@departmentOptions"
                            @bind-Value="toolbarDepartmentId"
@@ -58,7 +58,7 @@
     </DxToolbarItem>
 </DxToolbar>
 
-<DxLoadingPanel Target="#employeeGridPanel" Visible="@isLoading" ShadingColor="rgba(255,255,255,0.8)" />
+@* Loading panel moved inside the employee grid to use supported API (no Target) *@
 @if (!string.IsNullOrEmpty(notificationMessage))
 {
     <div class="dx-notification-panel dx-notification-@notificationLevel">
@@ -86,6 +86,7 @@ else
     </div>
 
     <div class="dx-employees-card" id="employeeGridPanel">
+        <DxLoadingPanel Visible="@isLoading" />
         <div class="dx-card-body">
             <EmployeeTable Employees="@filteredEmployees"
                           OnViewEmployee="ViewEmployee"
@@ -96,7 +97,7 @@ else
 }
 
 <DxPopup @ref="employeePopup"
-         HeaderText="@(isEditMode ? "Edit Employee" : "Create Employee")"
+         HeaderText='@(isEditMode ? "Edit Employee" : "Create Employee")'
          Width="720"
          Height="auto"
          Visible="@isPopupVisible"
@@ -164,7 +165,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        currentFilter.DepartmentId = 0;
+        toolbarDepartmentId = 0;
         await LoadEmployeesAsync();
     }
 
@@ -246,12 +247,14 @@ else
             if (isEditMode && model.EmployeeID.HasValue)
             {
                 await EmployeeService.UpdateAsync(model.EmployeeID.Value, model);
-                    ShowNotification("Employee updated successfully.", "success");
-                }
-                else
-                {
-                    var created = await EmployeeService.CreateAsync(model);
-                    ShowNotification($"Employee {created.EmployeeNumber} created successfully.", "success");
+                ShowNotification("Employee updated successfully.", "success");
+            }
+            else
+            {
+                var created = await EmployeeService.CreateAsync(model);
+                ShowNotification($"Employee {created.EmployeeNumber} created successfully.", "success");
+            }
+
             await LoadEmployeesAsync();
         }
         catch

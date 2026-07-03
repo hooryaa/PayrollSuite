@@ -9,7 +9,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Employee Number</label>
-                    <DxTextBox @bind-Value="workingModel.EmployeeNumber"
+                    <DxTextBox @bind-Text="workingModel.EmployeeNumber"
                                Enabled="@(!IsEdit)"
                                CssClass="dx-textbox-full" />
                     <ValidationMessage For="@(() => workingModel.EmployeeNumber)" />
@@ -32,7 +32,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">First Name *</label>
-                    <DxTextBox @bind-Value="workingModel.FirstName" CssClass="dx-textbox-full" />
+                    <DxTextBox @bind-Text="workingModel.FirstName" CssClass="dx-textbox-full" />
                     <ValidationMessage For="@(() => workingModel.FirstName)" />
                 </Template>
             </DxFormLayoutItem>
@@ -40,7 +40,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Last Name *</label>
-                    <DxTextBox @bind-Value="workingModel.LastName" CssClass="dx-textbox-full" />
+                    <DxTextBox @bind-Text="workingModel.LastName" CssClass="dx-textbox-full" />
                     <ValidationMessage For="@(() => workingModel.LastName)" />
                 </Template>
             </DxFormLayoutItem>
@@ -48,7 +48,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Email *</label>
-                    <DxTextBox @bind-Value="workingModel.Email"
+                    <DxTextBox @bind-Text="workingModel.Email"
                               InputType="InputType.Email"
                               CssClass="dx-textbox-full" />
                     <ValidationMessage For="@(() => workingModel.Email)" />
@@ -58,7 +58,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Work Email</label>
-                    <DxTextBox @bind-Value="workingModel.WorkEmail"
+                    <DxTextBox @bind-Text="workingModel.WorkEmail"
                               InputType="InputType.Email"
                               CssClass="dx-textbox-full" />
                 </Template>
@@ -67,7 +67,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Phone *</label>
-                    <DxTextBox @bind-Value="workingModel.Phone"
+                    <DxTextBox @bind-Text="workingModel.Phone"
                               InputType="InputType.Tel"
                               CssClass="dx-textbox-full" />
                 </Template>
@@ -90,7 +90,7 @@
             <DxFormLayoutItem ColSpanMd="6">
                 <Template Context="ignored">
                     <label class="dx-form-label">Hire Date *</label>
-                    <DxDateEdit @bind-Value="workingModel.HireDate"
+                    <DxDateEdit @bind-Date="workingModel.HireDate"
                                T="DateTime"
                                Enabled="true"
                                CssClass="dx-dateedit-full" />
