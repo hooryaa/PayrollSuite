@@ -1,143 +1,132 @@
 @using DevExpress.Blazor
 @using PayrollApp.Models
 
-<EditForm Model="@workingModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
+<div class="dx-dialog-form">
+    <EditForm Model="workingModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
 
-    <DxFormLayout CssClass="dx-employee-form-layout">
-        <DxFormLayoutGroup Caption="Personal Information" ColSpanMd="12">
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Employee Number</label>
-                    <DxTextBox @bind-Text="workingModel.EmployeeNumber"
-                               Enabled="@(!IsEdit)"
-                               CssClass="dx-textbox-full" />
-                    <ValidationMessage For="@(() => workingModel.EmployeeNumber)" />
-                </Template>
-            </DxFormLayoutItem>
+        <div class="dx-form-layout-card dx-card-elevated">
+            <div class="dx-form-section-title">Employee Details</div>
 
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Employment Type</label>
-                    <DxComboBox Data="@employmentTypes"
-                               @bind-Value="workingModel.EmploymentType"
-                               ValueFieldName="@(string.Empty)"
-                               TextFieldName="@(string.Empty)"
-                               CssClass="dx-combobox-full"
-                               AllowUserInput="false" />
-                    <ValidationMessage For="@(() => workingModel.EmploymentType)" />
-                </Template>
-            </DxFormLayoutItem>
+            <DxFormLayout CssClass="dx-employee-form-layout">
+                <DxFormLayoutGroup ColSpanMd="12">
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Employee Number</label>
+                            <DxTextBox @bind-Text="workingModel.EmployeeNumber"
+                                       Enabled="@(!IsEdit)"
+                                       CssClass="dx-textbox-full" />
+                            <ValidationMessage For="@(() => workingModel.EmployeeNumber)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Employment Type</label>
+                            <DxComboBox Data="@employmentTypes"
+                                       @bind-Value="workingModel.EmploymentType"
+                                       CssClass="dx-combobox-full"
+                                       AllowUserInput="false" />
+                            <ValidationMessage For="@(() => workingModel.EmploymentType)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">First Name *</label>
+                            <DxTextBox @bind-Text="workingModel.FirstName" CssClass="dx-textbox-full" />
+                            <ValidationMessage For="@(() => workingModel.FirstName)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Last Name *</label>
+                            <DxTextBox @bind-Text="workingModel.LastName" CssClass="dx-textbox-full" />
+                            <ValidationMessage For="@(() => workingModel.LastName)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Email *</label>
+                            <DxTextBox @bind-Text="workingModel.Email"
+                                      InputType="InputType.Email"
+                                      CssClass="dx-textbox-full" />
+                            <ValidationMessage For="@(() => workingModel.Email)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Work Email</label>
+                            <DxTextBox @bind-Text="workingModel.WorkEmail"
+                                      InputType="InputType.Email"
+                                      CssClass="dx-textbox-full" />
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+        </div>
 
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">First Name *</label>
-                    <DxTextBox @bind-Text="workingModel.FirstName" CssClass="dx-textbox-full" />
-                    <ValidationMessage For="@(() => workingModel.FirstName)" />
-                </Template>
-            </DxFormLayoutItem>
+        <div class="dx-form-layout-card dx-card-elevated">
+            <div class="dx-form-section-title">Employment Information</div>
 
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Last Name *</label>
-                    <DxTextBox @bind-Text="workingModel.LastName" CssClass="dx-textbox-full" />
-                    <ValidationMessage For="@(() => workingModel.LastName)" />
-                </Template>
-            </DxFormLayoutItem>
+            <DxFormLayout CssClass="dx-employee-form-layout">
+                <DxFormLayoutGroup ColSpanMd="12">
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Hire Date *</label>
+                            <DxDateEdit @bind-Date="workingModel.HireDate"
+                                       T="DateTime"
+                                       Enabled="true"
+                                       CssClass="dx-dateedit-full" />
+                            <ValidationMessage For="@(() => workingModel.HireDate)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Position ID</label>
+                            <DxSpinEdit @bind-Value="workingModel.PositionID" CssClass="dx-spinedit-full" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <label class="dx-form-label">Department</label>
+                            <DxComboBox Data="@departmentOptions"
+                                       @bind-Value="workingModel.DepartmentID"
+                                       ValueFieldName="Key"
+                                       TextFieldName="Value"
+                                       CssClass="dx-combobox-full"
+                                       AllowUserInput="false" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6">
+                        <Template Context="ignored">
+                            <div class="dx-checkbox-wrapper">
+                                <DxCheckBox @bind-Checked="workingModel.IsActive" />
+                                <label class="dx-checkbox-label">Active Employee</label>
+                            </div>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
+            </DxFormLayout>
+        </div>
 
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Email *</label>
-                    <DxTextBox @bind-Text="workingModel.Email"
-                              InputType="InputType.Email"
-                              CssClass="dx-textbox-full" />
-                    <ValidationMessage For="@(() => workingModel.Email)" />
-                </Template>
-            </DxFormLayoutItem>
+        <div class="dx-form-actions-panel">
+            <DxButton Text="Save"
+                      RenderStyle="ButtonRenderStyle.Primary"
+                      ButtonType="ButtonType.Submit"
+                      IconCssClass="oi oi-check"
+                      Disabled="@IsBusy"
+                      CssClass="dx-button-primary" />
+            <DxButton Text="Cancel"
+                      RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="Cancel"
+                      IconCssClass="oi oi-x"
+                      CssClass="dx-button-secondary" />
+        </div>
 
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Work Email</label>
-                    <DxTextBox @bind-Text="workingModel.WorkEmail"
-                              InputType="InputType.Email"
-                              CssClass="dx-textbox-full" />
-                </Template>
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Phone *</label>
-                    <DxTextBox @bind-Text="workingModel.Phone"
-                              InputType="InputType.Tel"
-                              CssClass="dx-textbox-full" />
-                </Template>
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Department</label>
-                    <DxComboBox Data="@departmentOptions"
-                               @bind-Value="workingModel.DepartmentID"
-                               ValueFieldName="Key"
-                               TextFieldName="Value"
-                               CssClass="dx-combobox-full"
-                               AllowUserInput="false" />
-                </Template>
-            </DxFormLayoutItem>
-        </DxFormLayoutGroup>
-
-        <DxFormLayoutGroup Caption="Employment Details" ColSpanMd="12">
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Hire Date *</label>
-                    <DxDateEdit @bind-Date="workingModel.HireDate"
-                               T="DateTime"
-                               Enabled="true"
-                               CssClass="dx-dateedit-full" />
-                    <ValidationMessage For="@(() => workingModel.HireDate)" />
-                </Template>
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem ColSpanMd="6">
-                <Template Context="ignored">
-                    <label class="dx-form-label">Position ID</label>
-                    <DxSpinEdit @bind-Value="workingModel.PositionID" CssClass="dx-spinedit-full" />
-                </Template>
-            </DxFormLayoutItem>
-
-            <DxFormLayoutItem ColSpanMd="12">
-                <Template Context="ignored">
-                    <div class="dx-checkbox-wrapper">
-                        <DxCheckBox @bind-Checked="workingModel.IsActive" />
-                        <label class="dx-checkbox-label">Active Employee</label>
-                    </div>
-                </Template>
-            </DxFormLayoutItem>
-        </DxFormLayoutGroup>
-
-        <DxFormLayoutGroup Caption="Actions" ColSpanMd="12">
-            <DxFormLayoutItem ColSpanMd="12">
-                <Template Context="ignored">
-                    <div class="dx-form-actions">
-                        <DxButton Text="Save"
-                                  RenderStyle="ButtonRenderStyle.Primary"
-                                  ButtonType="ButtonType.Submit"
-                                  IconCssClass="oi oi-check"
-                                  Disabled="@IsBusy"
-                                  CssClass="dx-action-button" />
-                        <DxButton Text="Cancel"
-                                  RenderStyle="ButtonRenderStyle.Secondary"
-                                  Click="Cancel"
-                                  IconCssClass="oi oi-x"
-                                  CssClass="dx-action-button" />
-                    </div>
-                </Template>
-            </DxFormLayoutItem>
-        </DxFormLayoutGroup>
-    </DxFormLayout>
-
-    <ValidationSummary />
-</EditForm>
+        <div class="dx-validation-summary">
+            <ValidationSummary />
+        </div>
+    </EditForm>
+</div>
 
 @code {
     [Parameter]

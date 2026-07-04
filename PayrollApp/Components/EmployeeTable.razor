@@ -1,87 +1,62 @@
 @using DevExpress.Blazor
 
-@* EmployeeTable - DevExpress Grid Component
-   Renders employee list using DxGrid with sorting, filtering, paging, and actions.
-*@
-
 @if (Employees?.Any() != true)
 {
     <div class="dx-empty-state-card">
         <div class="dx-empty-state">
             <div class="dx-empty-icon">📭</div>
-            <p class="dx-empty-message">No employees match the filter.</p>
+            <div>
+                <h3>No results yet</h3>
+                <p>Try expanding your search or add a new employee to populate this list.</p>
+            </div>
         </div>
     </div>
 }
 else
 {
-    <DxGrid Data="@Employees"
-            PageSize="10"
-            AllowPaging="true"
-            AllowSorting="true"
-            AllowFiltering="true"
-            FilterRowVisible="true"
-            ShowGroupPanel="true"
-            AllowColumnResizing="true"
-            PageIndex="0"
-            AllowSelectRowByClick="true"
-            CssClass="dx-employee-grid"
-            SelectionMode="GridSelectionMode.Single">
-        
-        <DxGridDataColumn FieldName="EmployeeNumber" Caption="Employee #" Width="12%" />
-        <DxGridDataColumn FieldName="FirstName" Caption="First Name" Width="15%" />
-        <DxGridDataColumn FieldName="LastName" Caption="Last Name" Width="15%" />
-        <DxGridDataColumn FieldName="DepartmentName" Caption="Department" Width="18%" SortOrder="GridColumnSortOrder.Ascending">
-            <CellDisplayTemplate Context="context">
-                @{ var employee = (EmployeeViewModel)context.DataItem; }
-                @RenderDepartment(employee.DepartmentID)
-            </CellDisplayTemplate>
-        </DxGridDataColumn>
-        <DxGridDataColumn FieldName="HireDate" Caption="Hire Date" Width="14%">
-            <CellDisplayTemplate Context="context">
-                @{ var employee = (EmployeeViewModel)context.DataItem; }
-                @employee.HireDate.ToString("MMM dd, yyyy")
-            </CellDisplayTemplate>
-        </DxGridDataColumn>
-        <DxGridDataColumn FieldName="IsActive" Caption="Status" Width="12%">
-            <CellDisplayTemplate Context="context">
-                @{ 
-                    var employee = (EmployeeViewModel)context.DataItem;
-                    var statusClass = employee.IsActive ? "dx-badge-success" : "dx-badge-inactive";
-                    var statusText = employee.IsActive ? "Active" : "Inactive";
-                }
-                <span class="dx-badge @statusClass">@statusText</span>
-            </CellDisplayTemplate>
-        </DxGridDataColumn>
-        
-        <DxGridCommandColumn Width="14%">
-            <CellDisplayTemplate Context="context">
-                @{ var employee = (EmployeeViewModel)context.DataItem; }
-                <DxButton RenderStyle="ButtonRenderStyle.Link" 
-                          Text="View" 
-                          IconCssClass="oi oi-eye"
-                          Click="@(async () => await OnViewEmployee.InvokeAsync(employee.EmployeeID))" />
-                
-                <DxButton RenderStyle="ButtonRenderStyle.Link" 
-                          Text="Edit" 
-                          IconCssClass="oi oi-pencil"
-                          Click="@(async () => await OnEditEmployee.InvokeAsync(employee.EmployeeID))" />
-                
-                <DxButton RenderStyle="ButtonRenderStyle.Link" 
-                          Text="Delete" 
-                          IconCssClass="oi oi-trash"
-                          Click="@(async () => await ConfirmDelete(employee.EmployeeID))" />
-            </CellDisplayTemplate>
-        </DxGridCommandColumn>
-    </DxGrid>
+    <div class="dx-dashboard-employee-list">
+        @foreach (var employee in Employees)
+        {
+            <article class="dx-employee-card dx-card-elevated">
+                <div class="dx-employee-card-header">
+                    <div class="dx-employee-avatar">@GetInitials(employee)</div>
+                    <div>
+                        <div class="dx-employee-name">@employee.FirstName @employee.LastName</div>
+                        <div class="dx-employee-meta">@employee.EmployeeNumber · @RenderDepartment(employee.DepartmentID)</div>
+                    </div>
+                </div>
+                <div class="dx-employee-card-footer">
+                    <span class="dx-status-pill @(employee.IsActive ? "dx-status-active" : "dx-status-inactive")">
+                        @(employee.IsActive ? "Active" : "Inactive")
+                    </span>
+                    <div class="dx-row-actions">
+                        <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                  IconCssClass="oi oi-eye"
+                                  Click="@(async () => await OnViewEmployee.InvokeAsync(employee.EmployeeID))"
+                                  CssClass="dx-icon-action" />
+                        <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                  IconCssClass="oi oi-pencil"
+                                  Click="@(async () => await OnEditEmployee.InvokeAsync(employee.EmployeeID))"
+                                  CssClass="dx-icon-action" />
+                        <DxButton RenderStyle="ButtonRenderStyle.Danger"
+                                  IconCssClass="oi oi-trash"
+                                  Click="@(async () => await ConfirmDelete(employee.EmployeeID))"
+                                  CssClass="dx-icon-action" />
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
 }
 
-<DxPopup @ref="deletePopup" HeaderText="Confirm Delete" CssClass="dx-confirm-dialog">
+<DxPopup @ref="deletePopup" HeaderText="Confirm Delete" CssClass="dx-modal-popup dx-confirm-dialog" Width="420" Height="auto" CloseOnOutsideClick="false" ShowTitle="true" AllowResize="false" AllowDrag="false">
     <BodyTemplate>
-        <p class="dx-dialog-message">Are you sure you want to delete this employee?</p>
-        <div class="dx-dialog-actions">
-            <DxButton Text="Cancel" RenderStyle="ButtonRenderStyle.Secondary" Click="@(async () => await deletePopup.CloseAsync())" />
-            <DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="@ConfirmDeleteAction" />
+        <div class="dx-dialog-content">
+            <p class="dx-dialog-message">Are you sure you want to delete this employee?</p>
+            <div class="dx-dialog-actions">
+                <DxButton Text="Cancel" RenderStyle="ButtonRenderStyle.Secondary" Click="@(async () => await deletePopup.CloseAsync())" CssClass="dx-button-secondary" />
+                <DxButton Text="Delete" RenderStyle="ButtonRenderStyle.Danger" Click="@ConfirmDeleteAction" CssClass="dx-button-danger" />
+            </div>
         </div>
     </BodyTemplate>
 </DxPopup>
@@ -127,8 +102,8 @@ else
         };
     }
 
-    private static int? GetDepartmentId(EmployeeViewModel emp)
+    private static string GetInitials(EmployeeViewModel employee)
     {
-        return emp.DepartmentID;
+        return string.Concat(employee.FirstName?.FirstOrDefault(), employee.LastName?.FirstOrDefault()).ToUpperInvariant();
     }
 }

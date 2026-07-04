@@ -5,121 +5,170 @@
 @using PayrollApp.Models
 @using DevExpress.Blazor
 
-@* Employee List - DevExpress Components
-   Modern employee list with search, filtering, and popup form workflows
-*@
-
-<div class="dx-page-header">
-    <h2>Employee Management</h2>
-    <p>View, search, and manage all employees in the payroll system</p>
+<div class="dx-page-heading">
+    <div>
+        <p class="dx-badge-label">Employees</p>
+        <h1>Team Directory</h1>
+        <p class="dx-page-intro">Manage employee records, departmental assignments, and status across the organization.</p>
+    </div>
+    <DxButton Text="New Employee"
+              IconCssClass="oi oi-plus"
+              RenderStyle="ButtonRenderStyle.Primary"
+              Click="@OpenCreatePopup"
+              CssClass="dx-button-primary" />
 </div>
 
-<DxToolbar CssClass="dx-toolbar-bar">
-    <DxToolbarItem>
-        <Template>
-            <DxButton Text="New Employee"
-                      RenderStyle="ButtonRenderStyle.Primary"
-                      IconCssClass="oi oi-plus"
-                      Click="@OpenCreatePopup"
-                      CssClass="dx-toolbar-button" />
-        </Template>
-    </DxToolbarItem>
-
-    <DxToolbarItem>
-        <Template>
-            <div class="dx-toolbar-search-row">
-                <DxTextBox Placeholder="Search employees..."
-                          @bind-Text="toolbarSearchTerm"
-                          ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                          CssClass="dx-toolbar-search" />
-                <DxComboBox Data="@departmentOptions"
-                           @bind-Value="toolbarDepartmentId"
-                           ValueFieldName="Key"
-                           TextFieldName="Value"
-                           CssClass="dx-toolbar-select"
-                           AllowUserInput="false" />
-                <DxButton Text="Apply"
-                          RenderStyle="ButtonRenderStyle.Secondary"
-                          IconCssClass="oi oi-magnifying-glass"
-                          Click="@ApplyFilters"
-                          CssClass="dx-toolbar-button dx-toolbar-apply-button" />
-            </div>
-        </Template>
-    </DxToolbarItem>
-
-    <DxToolbarItem>
-        <Template>
-            <DxButton Text="Refresh"
-                      RenderStyle="ButtonRenderStyle.Secondary"
-                      IconCssClass="oi oi-reload"
-                      Click="@LoadEmployeesAsync"
-                      CssClass="dx-toolbar-button" />
-        </Template>
-    </DxToolbarItem>
-</DxToolbar>
-
-@* Loading panel moved inside the employee grid to use supported API (no Target) *@
 @if (!string.IsNullOrEmpty(notificationMessage))
 {
-    <div class="dx-notification-panel dx-notification-@notificationLevel">
-        <div class="dx-notification-content">
-            <span>@notificationMessage</span>
-            <button class="dx-notification-close" @onclick="ClearNotification">×</button>
-        </div>
+    <div class="dx-toast dx-toast-@notificationLevel">
+        <span>@notificationMessage</span>
+        <button class="dx-toast-close" @onclick="ClearNotification">×</button>
     </div>
 }
 
-@if (isLoading)
-{
-    <div class="dx-loading-card">
-        <div class="dx-loading-indicator">
-            <p>Loading employees...</p>
-        </div>
+<div class="dx-table-toolbar">
+    <div class="dx-search-input-wrapper">
+        <span class="oi oi-magnifying-glass dx-search-icon"></span>
+        <input type="search"
+               @bind="toolbarSearchTerm"
+               placeholder="Search employees, departments, IDs..."
+               class="dx-search-input" />
     </div>
-}
-else
-{
-    <div class="dx-section-header">
-        <div class="dx-section-title">
-            <span>Employee Records (@filteredEmployees.Count)</span>
-        </div>
+    <DxComboBox Data="@departmentOptions"
+                @bind-Value="toolbarDepartmentId"
+                ValueFieldName="Key"
+                TextFieldName="Value"
+                CssClass="dx-filter-select"
+                AllowUserInput="false"
+                Placeholder="All Departments" />
+    <div class="dx-toolbar-actions">
+        <DxButton Text="Apply"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  IconCssClass="oi oi-magnifying-glass"
+                  Click="@ApplyFilters"
+                  CssClass="dx-button-secondary" />
+        <DxButton Text="Refresh"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  IconCssClass="oi oi-reload"
+                  Click="@LoadEmployeesAsync"
+                  CssClass="dx-button-secondary" />
     </div>
+</div>
 
-    <div class="dx-employees-card" id="employeeGridPanel">
-        <DxLoadingPanel Visible="@isLoading" />
-        <div class="dx-card-body">
-            <EmployeeTable Employees="@filteredEmployees"
-                          OnViewEmployee="ViewEmployee"
-                          OnEditEmployee="OpenEditPopup"
-                          OnDeleteEmployee="ConfirmDeleteEmployee" />
+<div class="dx-table-card dx-card-elevated">
+    @if (isLoading)
+    {
+        <div class="dx-loading-card">
+            <DxLoadingPanel Visible="true" ShowPane="false" />
+            <div class="dx-loading-label">Loading team data…</div>
         </div>
-    </div>
-}
+    }
+    else if (!filteredEmployees.Any())
+    {
+        <div class="dx-empty-state-card">
+            <div class="dx-empty-state">
+                <div class="dx-empty-icon">📭</div>
+                <div>
+                    <h3>No employees found</h3>
+                    <p>Try adjusting the search or department filter.</p>
+                    <DxButton Text="Add Employee"
+                              RenderStyle="ButtonRenderStyle.Primary"
+                              IconCssClass="oi oi-plus"
+                              Click="@OpenCreatePopup"
+                              CssClass="dx-button-primary" />
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <DxDataGrid Data="@filteredEmployees"
+                    ColumnAutoWidth="false"
+                    ShowFilterRow="false"
+                    ShowColumnChooser="true"
+                    ShowGroupPanel="false"
+                    PagerVisible="true"
+                    PageSize="12"
+                    CssClass="dx-employee-grid">
+            <Columns>
+                <DxDataGridColumn Caption="Employee" Width="320px">
+                    <CellDisplayTemplate Context="employee">
+                        <div class="dx-employee-cell">
+                            <div class="dx-employee-avatar">@GetInitials(employee)</div>
+                            <div>
+                                <div class="dx-employee-name">@employee.FirstName @employee.LastName</div>
+                                <div class="dx-employee-meta">@employee.EmployeeNumber</div>
+                            </div>
+                        </div>
+                    </CellDisplayTemplate>
+                </DxDataGridColumn>
+                <DxDataGridColumn Field="@nameof(EmployeeViewModel.Email)" Caption="Email" Width="260px" />
+                <DxDataGridColumn Field="@nameof(EmployeeViewModel.DepartmentID)" Caption="Department" Width="180px">
+                    <CellDisplayTemplate Context="employee">
+                        <span class="dx-status-pill dx-pill-secondary">@GetDepartmentName(employee.DepartmentID)</span>
+                    </CellDisplayTemplate>
+                </DxDataGridColumn>
+                <DxDataGridColumn Field="@nameof(EmployeeViewModel.HireDate)" Caption="Hire Date" Width="150px" DisplayFormat="{0:MMM dd, yyyy}" />
+                <DxDataGridColumn Caption="Status" Width="140px">
+                    <CellDisplayTemplate Context="employee">
+                        <span class="dx-status-pill @(employee.IsActive ? "dx-status-active" : "dx-status-inactive")">
+                            @(employee.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </CellDisplayTemplate>
+                </DxDataGridColumn>
+                <DxDataGridColumn Caption="Actions" Width="180px">
+                    <CellDisplayTemplate Context="employee">
+                        <div class="dx-row-actions">
+                            <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                      IconCssClass="oi oi-eye"
+                                      Click="@(async () => ViewEmployee(employee.EmployeeID))"
+                                      CssClass="dx-icon-action" />
+                            <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+                                      IconCssClass="oi oi-pencil"
+                                      Click="@(async () => OpenEditPopup(employee.EmployeeID))"
+                                      CssClass="dx-icon-action" />
+                            <DxButton RenderStyle="ButtonRenderStyle.Danger"
+                                      IconCssClass="oi oi-trash"
+                                      Click="@(async () => ConfirmDeleteEmployee(employee.EmployeeID))"
+                                      CssClass="dx-icon-action" />
+                        </div>
+                    </CellDisplayTemplate>
+                </DxDataGridColumn>
+            </Columns>
+        </DxDataGrid>
+    }
+</div>
 
 <DxPopup @ref="employeePopup"
-         HeaderText='@(isEditMode ? "Edit Employee" : "Create Employee")'
-         Width="720"
+         CssClass="dx-modal-popup"
+         HeaderText="@(isEditMode ? \"Edit Employee\" : \"Create Employee\")"
+         Width="760"
          Height="auto"
          Visible="@isPopupVisible"
-         CloseOnOutsideClick="true"
+         CloseOnOutsideClick="false"
          ShowTitle="true"
-         VisibleChanged="@((visible) => isPopupVisible = visible)">
+         AllowResize="false"
+         AllowDrag="false"
+         VisibleChanged="@(visible => isPopupVisible = visible)">
     <BodyTemplate>
-        <EmployeeFormDialog Model="@popupModel"
-                            IsEdit="@isEditMode"
-                            IsBusy="@isPopupSaving"
+        <EmployeeFormDialog Model="popupModel"
+                            IsEdit="isEditMode"
+                            IsBusy="isPopupSaving"
                             OnValidSubmit="HandlePopupSubmit"
                             OnCancel="ClosePopup" />
     </BodyTemplate>
 </DxPopup>
 
 <DxPopup @ref="deletePopup"
+         CssClass="dx-modal-popup"
          HeaderText="Confirm Delete"
          Width="420"
          Height="auto"
          Visible="@isDeletePopupVisible"
-         CloseOnOutsideClick="true"
+         CloseOnOutsideClick="false"
          ShowTitle="true"
+         AllowResize="false"
+         AllowDrag="false"
          VisibleChanged="@((visible) => isDeletePopupVisible = visible)">
     <BodyTemplate>
         <div class="dx-dialog-content">
@@ -127,10 +176,12 @@ else
             <div class="dx-dialog-actions">
                 <DxButton Text="Cancel"
                           RenderStyle="ButtonRenderStyle.Secondary"
-                          Click="@CloseDeletePopup" />
+                          Click="@CloseDeletePopup"
+                          CssClass="dx-button-secondary" />
                 <DxButton Text="Delete"
                           RenderStyle="ButtonRenderStyle.Danger"
-                          Click="@DeleteEmployeeConfirmed" />
+                          Click="@DeleteEmployeeConfirmed"
+                          CssClass="dx-button-danger" />
             </div>
         </div>
     </BodyTemplate>
@@ -185,7 +236,8 @@ else
             .Where(e => string.IsNullOrWhiteSpace(toolbarSearchTerm)
                 || e.FirstName.Contains(toolbarSearchTerm, StringComparison.OrdinalIgnoreCase)
                 || e.LastName.Contains(toolbarSearchTerm, StringComparison.OrdinalIgnoreCase)
-                || e.EmployeeNumber.Contains(toolbarSearchTerm, StringComparison.OrdinalIgnoreCase))
+                || e.EmployeeNumber.Contains(toolbarSearchTerm, StringComparison.OrdinalIgnoreCase)
+                || (e.Email ?? string.Empty).Contains(toolbarSearchTerm, StringComparison.OrdinalIgnoreCase))
             .Where(e => toolbarDepartmentId == 0 || e.DepartmentID == toolbarDepartmentId)
             .OrderBy(e => e.LastName)
             .ThenBy(e => e.FirstName)
@@ -256,8 +308,15 @@ else
             }
 
             await LoadEmployeesAsync();
+            ClosePopup();
+            popupModel = new EmployeeEditModel();
+            isEditMode = false;
         }
-        catch
+        catch (HttpRequestException httpEx)
+        {
+            ShowNotification($"Unable to save employee: {httpEx.Message}", "error");
+        }
+        catch (Exception)
         {
             ShowNotification("Unable to save employee. Please try again.", "error");
         }
@@ -308,5 +367,23 @@ else
     {
         notificationMessage = text;
         notificationLevel = level;
+    }
+
+    private static string GetInitials(EmployeeViewModel employee)
+    {
+        return string.Concat(employee.FirstName?.FirstOrDefault(), employee.LastName?.FirstOrDefault()).ToUpperInvariant();
+    }
+
+    private static string GetDepartmentName(int? departmentId)
+    {
+        return departmentId switch
+        {
+            1 => "Human Resources",
+            2 => "Finance",
+            3 => "Operations",
+            4 => "IT",
+            5 => "Sales",
+            _ => "Unassigned"
+        };
     }
 }

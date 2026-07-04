@@ -1,17 +1,38 @@
+@using DevExpress.Blazor
 @inherits LayoutComponentBase
 
 <div class="dx-main-container">
-    <div class="dx-sidebar">
+    <aside class="dx-sidebar">
         <NavMenu />
-    </div>
+    </aside>
 
     <div class="dx-content-wrapper">
         <header class="dx-topbar">
-            <div class="dx-header-title">
-                <h1>Payroll Portal</h1>
+            <div class="dx-topbar-branding">
+                <div class="dx-topbar-brand-title">PayrollSuite</div>
+                <div class="dx-topbar-brand-subtitle">Enterprise payroll management</div>
             </div>
-            <div class="dx-header-description">
-                <p>Access employees, review details, and manage staffing</p>
+
+            <div class="dx-topbar-actions">
+                <div class="dx-topbar-search">
+                    <span class="oi oi-magnifying-glass dx-search-icon"></span>
+                    <input type="search" placeholder="Search employees, reports, payroll..." />
+                </div>
+
+                <div class="dx-user-controls">
+                    <button class="dx-icon-button" title="Notifications">
+                        <span class="oi oi-bell"></span>
+                    </button>
+
+                    <div class="dx-topbar-info">
+                        <span>@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                        <span class="dx-company-label">PayrollSuite</span>
+                    </div>
+
+                    <div class="dx-avatar-chip">
+                        <span>AD</span>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -20,7 +41,8 @@
         </main>
 
         <footer class="dx-footer">
-            <p>&copy; 2026 PayrollSuite. All rights reserved.</p>
+            <span>© 2026 PayrollSuite</span>
+            <span>Modern enterprise HRMS experience</span>
         </footer>
     </div>
 </div>

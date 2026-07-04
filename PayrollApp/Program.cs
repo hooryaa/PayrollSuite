@@ -2,6 +2,7 @@ using PayrollApp.Services;
 using DevExpress.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseStaticWebAssets();
 
 var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? throw new InvalidOperationException("ApiBaseUrl is required in PayrollApp appsettings.json.");
 

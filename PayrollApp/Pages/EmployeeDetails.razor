@@ -1,141 +1,173 @@
 @page "/employees/{EmployeeId:int}"
 @inject IEmployeeApiService EmployeeService
 @inject NavigationManager NavigationManager
+@using DevExpress.Blazor
 
-@* Employee Details - DevExpress Components
-   Modern employee detail view with professional layout
-*@
-
-<div class="dx-page-header">
-    <h2>Employee Details</h2>
-    <p>View complete employee information</p>
+<div class="dx-page-heading">
+    <div>
+        <p class="dx-badge-label">Employee Profile</p>
+        <h1>Employee Details</h1>
+        <p class="dx-page-intro">A polished personnel summary for HR and payroll decision makers.</p>
+    </div>
+    <div class="dx-page-actions">
+        <DxButton Text="Edit"
+                  IconCssClass="oi oi-pencil"
+                  RenderStyle="ButtonRenderStyle.Primary"
+                  Click="@EditEmployee"
+                  CssClass="dx-button-primary" />
+        <DxButton Text="Delete"
+                  IconCssClass="oi oi-trash"
+                  RenderStyle="ButtonRenderStyle.Danger"
+                  Click="@DeleteConfirm"
+                  CssClass="dx-button-danger" />
+        <DxButton Text="Back"
+                  IconCssClass="oi oi-arrow-left"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  Click="@BackToList"
+                  CssClass="dx-button-secondary" />
+    </div>
 </div>
 
 @if (isLoading)
 {
     <div class="dx-loading-card">
-        <div class="dx-loading-indicator">
-            <p>Loading employee details...</p>
-        </div>
+        <DxLoadingPanel Visible="true" ShowPane="false" />
+        <div class="dx-loading-label">Loading employee record…</div>
     </div>
 }
 else if (employee is null)
 {
-    <div class="dx-alert-card dx-alert-danger">
-        <div class="dx-alert-content">
-            <span class="dx-alert-icon">❌</span>
-            <p>Employee not found.</p>
+    <div class="dx-empty-state-card">
+        <div class="dx-empty-state">
+            <div class="dx-empty-icon">❌</div>
+            <div>
+                <h3>Employee not found</h3>
+                <p>The selected employee profile could not be loaded.</p>
+            </div>
         </div>
     </div>
 }
 else
 {
-    <div class="dx-detail-card">
-        <div class="dx-detail-header">
-            <div class="dx-employee-avatar">👤</div>
-            <div class="dx-employee-header">
-                <h3>@employee.FirstName @employee.LastName</h3>
-                <p class="dx-employee-number">@employee.EmployeeNumber</p>
-                <span class="dx-badge @(employee.IsActive ? "dx-badge-success" : "dx-badge-inactive")">
-                    @(employee.IsActive ? "Active" : "Inactive")
-                </span>
-            </div>
-        </div>
-        <div class="dx-card-body">
-            <div class="dx-detail-grid">
-                <div class="dx-detail-group">
-                    <h4 class="dx-detail-group-title">Contact Information</h4>
-                    <div class="dx-detail-row">
-                        <div class="dx-detail-item">
-                            <label>Personal Email</label>
-                            <p class="dx-detail-value">@employee.Email</p>
-                        </div>
-                        <div class="dx-detail-item">
-                            <label>Work Email</label>
-                            <p class="dx-detail-value">@employee.WorkEmail</p>
-                        </div>
-                    </div>
-                    <div class="dx-detail-row">
-                        <div class="dx-detail-item">
-                            <label>Phone</label>
-                            <p class="dx-detail-value">@employee.Phone</p>
-                        </div>
+    <div class="dx-detail-shell">
+        <div class="dx-detail-summary-card dx-card-elevated">
+            <div class="dx-detail-summary-top">
+                <div class="dx-employee-avatar-large">@GetInitials(employee)</div>
+                <div>
+                    <h2>@employee.FirstName @employee.LastName</h2>
+                    <p class="dx-employee-number">@employee.EmployeeNumber</p>
+                    <div class="dx-detail-pill-group">
+                        <span class="dx-status-pill @(employee.IsActive ? "dx-status-active" : "dx-status-inactive")">
+                            @(employee.IsActive ? "Active" : "Inactive")
+                        </span>
+                        <span class="dx-status-pill dx-pill-secondary">@RenderDepartment(employee.DepartmentID)</span>
                     </div>
                 </div>
+            </div>
+            <div class="dx-detail-summary-body">
+                <div class="dx-detail-metric">
+                    <span>Hire Date</span>
+                    <strong>@employee.HireDate.ToString("MMMM dd, yyyy")</strong>
+                </div>
+                <div class="dx-detail-metric">
+                    <span>Employment Type</span>
+                    <strong>@employee.EmploymentType</strong>
+                </div>
+                <div class="dx-detail-metric">
+                    <span>Position ID</span>
+                    <strong>@(employee.PositionID?.ToString() ?? "N/A")</strong>
+                </div>
+            </div>
+        </div>
 
-                <div class="dx-detail-group">
-                    <h4 class="dx-detail-group-title">Employment Details</h4>
-                    <div class="dx-detail-row">
-                        <div class="dx-detail-item">
-                            <label>Hire Date</label>
-                            <p class="dx-detail-value">@employee.HireDate.ToString("MMMM dd, yyyy")</p>
-                        </div>
-                        <div class="dx-detail-item">
-                            <label>Employment Type</label>
-                            <p class="dx-detail-value">@employee.EmploymentType</p>
-                        </div>
+        <div class="dx-detail-grid">
+            <div class="dx-card-section dx-card-elevated">
+                <h3>Personal Information</h3>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Full Name</label>
+                        <p>@employee.FirstName @employee.LastName</p>
                     </div>
-                    <div class="dx-detail-row">
-                        <div class="dx-detail-item">
-                            <label>Department</label>
-                            <p class="dx-detail-value">@RenderDepartment(employee.DepartmentID)</p>
-                        </div>
-                        <div class="dx-detail-item">
-                            <label>Position ID</label>
-                            <p class="dx-detail-value">@(employee.PositionID?.ToString() ?? "N/A")</p>
-                        </div>
+                    <div>
+                        <label>Employee ID</label>
+                        <p>@employee.EmployeeNumber</p>
+                    </div>
+                </div>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Department</label>
+                        <p>@RenderDepartment(employee.DepartmentID)</p>
+                    </div>
+                    <div>
+                        <label>Status</label>
+                        <p>@(employee.IsActive ? "Active" : "Inactive")</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dx-card-section dx-card-elevated">
+                <h3>Contact</h3>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Personal Email</label>
+                        <p>@employee.Email</p>
+                    </div>
+                    <div>
+                        <label>Work Email</label>
+                        <p>@employee.WorkEmail</p>
+                    </div>
+                </div>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Phone</label>
+                        <p>@employee.Phone</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dx-card-section dx-card-elevated">
+                <h3>Employment</h3>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Hire Date</label>
+                        <p>@employee.HireDate.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                    <div>
+                        <label>Employment Type</label>
+                        <p>@employee.EmploymentType</p>
+                    </div>
+                </div>
+                <div class="dx-card-section-row">
+                    <div>
+                        <label>Position ID</label>
+                        <p>@(employee.PositionID?.ToString() ?? "N/A")</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <DxToolbar CssClass="dx-details-toolbar">
-        <DxToolbarItem>
-            <Template>
-                <DxButton Text="Edit Employee"
-                          RenderStyle="ButtonRenderStyle.Primary"
-                          IconCssClass="oi oi-pencil"
-                          Click="@EditEmployee"
-                          CssClass="dx-toolbar-button" />
-            </Template>
-        </DxToolbarItem>
-        <DxToolbarItem>
-            <Template>
-                <DxButton Text="Delete"
-                          RenderStyle="ButtonRenderStyle.Danger"
-                          IconCssClass="oi oi-trash"
-                          Click="@DeleteConfirm"
-                          CssClass="dx-toolbar-button" />
-            </Template>
-        </DxToolbarItem>
-        <DxToolbarItem>
-            <Template>
-                <DxButton Text="Back to List"
-                          RenderStyle="ButtonRenderStyle.Secondary"
-                          IconCssClass="oi oi-arrow-left"
-                          Click="@BackToList"
-                          CssClass="dx-toolbar-button" />
-            </Template>
-        </DxToolbarItem>
-    </DxToolbar>
-
-    <DxPopup @ref="deletePopup" 
-            HeaderText="Confirm Delete" 
-            CssClass="dx-confirm-dialog"
+    <DxPopup @ref="deletePopup"
+            HeaderText="Confirm Delete"
+            CssClass="dx-modal-popup dx-confirm-dialog"
+            Width="440"
+            Height="auto"
+            CloseOnOutsideClick="false"
+            ShowTitle="true"
             AllowResize="false"
             AllowDrag="false">
         <BodyTemplate>
             <div class="dx-dialog-content">
-                <p>Are you sure you want to delete <strong>@employee.FirstName @employee.LastName</strong>?</p>
-                <p class="dx-warning-text">This action cannot be undone.</p>
+                <p>Are you sure you want to remove <strong>@employee.FirstName @employee.LastName</strong> from the system?</p>
                 <div class="dx-dialog-actions">
-                    <DxButton Text="Cancel" 
-                             RenderStyle="ButtonRenderStyle.Secondary"
-                             Click="@(async () => await deletePopup.CloseAsync())" />
-                    <DxButton Text="Delete" 
-                             RenderStyle="ButtonRenderStyle.Danger"
-                             Click="@DeleteEmployee" />
+                    <DxButton Text="Cancel"
+                              RenderStyle="ButtonRenderStyle.Secondary"
+                              Click="@(async () => await deletePopup.CloseAsync())"
+                              CssClass="dx-button-secondary" />
+                    <DxButton Text="Delete"
+                              RenderStyle="ButtonRenderStyle.Danger"
+                              Click="@DeleteEmployee"
+                              CssClass="dx-button-danger" />
                 </div>
             </div>
         </BodyTemplate>
@@ -189,5 +221,10 @@ else
             5 => "Sales",
             _ => "Unassigned"
         };
+    }
+
+    private static string GetInitials(EmployeeViewModel employee)
+    {
+        return string.Concat(employee.FirstName?.FirstOrDefault(), employee.LastName?.FirstOrDefault()).ToUpperInvariant();
     }
 }

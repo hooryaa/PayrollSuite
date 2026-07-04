@@ -1,34 +1,64 @@
 <nav class="dx-nav-menu">
-    <div class="dx-nav-header">
+    <div class="dx-nav-brand">
         <div class="dx-brand-logo">
             <span class="dx-brand-icon">💼</span>
-            <span class="dx-brand-text">PayrollSuite</span>
+            <div class="dx-brand-text">
+                <strong>PayrollSuite</strong>
+                <span>Enterprise HRMS</span>
+            </div>
         </div>
     </div>
 
     <ul class="dx-nav-list">
         <li>
             <NavLink class="dx-nav-link" href="/" Match="NavLinkMatch.All">
-                <span class="dx-nav-icon">📊</span>
+                <span class="dx-nav-icon oi oi-pie-chart"></span>
                 <span class="dx-nav-text">Dashboard</span>
             </NavLink>
         </li>
         <li>
             <NavLink class="dx-nav-link" href="/employees" Match="NavLinkMatch.Prefix">
-                <span class="dx-nav-icon">👥</span>
-                <span class="dx-nav-text">Employee List</span>
+                <span class="dx-nav-icon oi oi-people"></span>
+                <span class="dx-nav-text">Employees</span>
             </NavLink>
         </li>
         <li>
-            <NavLink class="dx-nav-link" href="/employees/create">
-                <span class="dx-nav-icon">➕</span>
-                <span class="dx-nav-text">Add Employee</span>
+            <NavLink class="dx-nav-link" href="/departments" Match="NavLinkMatch.Prefix">
+                <span class="dx-nav-icon oi oi-briefcase"></span>
+                <span class="dx-nav-text">Departments</span>
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="dx-nav-link" href="/payroll" Match="NavLinkMatch.Prefix">
+                <span class="dx-nav-icon oi oi-dollar"></span>
+                <span class="dx-nav-text">Payroll</span>
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="dx-nav-link" href="/attendance" Match="NavLinkMatch.Prefix">
+                <span class="dx-nav-icon oi oi-clock"></span>
+                <span class="dx-nav-text">Attendance</span>
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="dx-nav-link" href="/reports" Match="NavLinkMatch.Prefix">
+                <span class="dx-nav-icon oi oi-bar-chart"></span>
+                <span class="dx-nav-text">Reports</span>
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="dx-nav-link" href="/settings" Match="NavLinkMatch.Prefix">
+                <span class="dx-nav-icon oi oi-cog"></span>
+                <span class="dx-nav-text">Settings</span>
             </NavLink>
         </li>
     </ul>
 
     <div class="dx-nav-footer">
-        <p class="dx-nav-version">v1.0.0</p>
+        <div class="dx-nav-footer-text">
+            <span>Premium enterprise experience</span>
+            <span class="dx-nav-version">v1.0.0</span>
+        </div>
     </div>
 </nav>
 
